@@ -55,8 +55,8 @@ export function ShawlCanvas({ active, onSelect }: Props) {
         {/* Real shawl photograph replaces this weave placeholder */}
         <span className="eyebrow absolute left-4 top-4 bg-paper/80 px-2 py-1 !text-[0.6rem]">Replace · Shawl canvas photograph</span>
         <span aria-hidden className="eyebrow absolute right-4 top-4">Before the Loom · 1–5</span>
-        <div aria-hidden className="seam absolute inset-x-0 top-[80%]" />
-        <span aria-hidden className="eyebrow absolute right-4 top-[calc(80%+1.25rem)]">At the Loom · 6–8</span>
+        <div aria-hidden className="seam absolute inset-x-0 top-[70%]" />
+        <span aria-hidden className="eyebrow absolute right-4 top-[calc(70%+1.25rem)]">At the Loom · 6–8</span>
         <svg viewBox="0 0 600 800" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid meet" role="group" aria-label="Embroidered journey map with eight chapters">
           <path d={ROUTE} fill="none" stroke="var(--color-foreground)" strokeOpacity="0.15" strokeWidth="1.5" strokeDasharray="7 6" ref={pathRef} />
           {total > 0 && (
