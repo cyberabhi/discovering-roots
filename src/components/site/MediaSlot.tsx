@@ -4,7 +4,7 @@ interface MediaSlotProps {
   label: string;
   alt: string;
   kind?: "image" | "video" | "portrait" | "shawl";
-  src?: string;
+  src?: string | undefined;
   className?: string;
 }
 

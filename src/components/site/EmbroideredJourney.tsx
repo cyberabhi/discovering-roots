@@ -12,7 +12,7 @@ export function EmbroideredJourney() {
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.index));
+          if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset["index"]));
         });
       },
       { rootMargin: "-45% 0px -50% 0px" },
@@ -38,7 +38,7 @@ export function EmbroideredJourney() {
       {/* Mobile compact progress */}
       <div className="sticky top-16 z-30 mt-10 border-y border-border bg-paper/95 px-5 py-3 backdrop-blur lg:hidden" aria-live="polite">
         <div className="flex items-center justify-between eyebrow">
-          <span>{zones[chapters[active].zone].label}</span>
+          <span>{zones[chapters[active]!.zone].label}</span>
           <span>{String(active + 1).padStart(2, "0")} / 08</span>
         </div>
         <div className="mt-2 flex gap-1">
@@ -57,7 +57,7 @@ export function EmbroideredJourney() {
         </div>
         <ol className="lg:col-span-5">
           {chapters.map((c, i) => {
-            const zoneStart = i === 0 || chapters[i - 1].zone !== c.zone;
+            const zoneStart = i === 0 || chapters[i - 1]!.zone !== c.zone;
             return (
               <li key={c.id}>
                 {zoneStart && (

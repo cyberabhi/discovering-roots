@@ -57,11 +57,11 @@ export function ShawlDetailGallery() {
             <figcaption className="mt-2 eyebrow">Plate III — Full drape</figcaption>
           </figure>
           <div className="grid grid-cols-3 gap-3 md:col-span-4 md:grid-cols-1 md:self-end">
-            {[
+            {([
               ["Fringe detail", "Placeholder for macro of hand-finished fringe"],
               ["Embroidery macro", "Placeholder for macro of hand embroidery"],
               ["Weave texture", "Placeholder for tactile weave texture crop"],
-            ].map(([l, a]) => (
+            ] as const).map(([l, a]) => (
               <figure key={l}>
                 <MediaSlot label={l} alt={a} className="aspect-square w-full md:aspect-[16/9] [&>span]:max-md:hidden" />
                 <figcaption className="mt-1 eyebrow !text-[0.6rem]">{l}</figcaption>
