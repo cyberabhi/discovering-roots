@@ -70,7 +70,7 @@ export function ShawlCanvas({ active, onSelect }: Props) {
             </mask>
           </defs>
           {points.map((pt, i) => {
-            const c = chapters[i];
+            const c = chapters[i]!;
             const isActive = i === active;
             const done = i <= active;
             return (
