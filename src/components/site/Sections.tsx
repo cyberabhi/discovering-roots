@@ -6,12 +6,12 @@ export function OriginSection() {
     <section id="origin" aria-labelledby="origin-title" className="weave border-t border-border">
       <div className="mx-auto grid max-w-[1440px] gap-10 px-5 py-20 md:grid-cols-12 md:px-10 md:py-28">
         <div className="md:col-span-5">
-          <p className="eyebrow">The Origin</p>
-          <h2 id="origin-title" className="mt-4 text-4xl leading-tight md:text-5xl">High pasture, long winters, a fibre shaped by place.</h2>
+          <p className="eyebrow">Where the story begins</p>
+          <h2 id="origin-title" className="mt-4 text-4xl leading-tight md:text-5xl">A rare softness, shaped by life on the high plateau.</h2>
         </div>
         <div className="space-y-5 leading-relaxed text-muted-foreground md:col-span-6 md:col-start-7">
-          <p>Pashmina begins with the fine undercoat of Changthangi goats, raised by pastoral communities on the high Changthang plateau. The cold produces the soft down that is combed during the seasonal moult.</p>
-          <p className="eyebrow !text-sky">Editorial note · geography and community details to be confirmed before publication.</p>
+          <p>Long before a Pashmina rests on your shoulders, its story begins on the Changthang plateau. In the high-altitude cold, Changthangi goats grow a fine undercoat, carefully combed by pastoral communities during the seasonal moult.</p>
+          <p>That delicate fibre is the first chapter of a shawl to be treasured—and a way to feel closer to the place and people behind it.</p>
         </div>
       </div>
     </section>
