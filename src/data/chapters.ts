@@ -13,9 +13,12 @@ export interface Chapter {
   kicker: string;
   story: string;
   caption: string;
-  media: { kind: "image" | "video"; src?: string; alt: string };
-  portrait?: { src?: string; alt: string; role: string; voice: string };
-  audio?: { src?: string; label: string };
+  media: { kind: "image" | "video"; src?: string | undefined; alt: string; credit?: string | undefined; externalUrl?: string | undefined; poster?: string | undefined };
+  portrait?: { src?: string | undefined; alt: string; role: string; voice?: string | undefined; credit?: string | undefined } | undefined;
+  audio?: { src?: string | undefined; label: string } | undefined;
+  body?: import("@portabletext/react").PortableTextBlock[] | undefined;
+  toolsAndMaterials?: string[] | undefined;
+  locationLabel?: string | undefined;
   verified: boolean;
 }
 
