@@ -86,11 +86,12 @@ export function PreservationSection() {
           </p>
         </div>
         <div className="border-t border-foreground/30 pt-8 md:col-span-5 md:col-start-8 md:border-l md:border-t-0 md:pl-10 md:pt-0">
-          <p className="eyebrow">Support · Private enquiry</p>
-          <p className="mt-4 font-display text-3xl leading-snug">For collectors, institutions and supporters of the craft.</p>
-          <a href="mailto:hello@example.com?subject=Discovering%20Roots%20enquiry" className="mt-8 inline-flex items-center gap-3 bg-slate px-6 py-3 eyebrow !text-paper transition-opacity hover:opacity-90">
-            Make a private enquiry <span aria-hidden>→</span>
+          <p className="eyebrow">Preservation · Patronage</p>
+          <p className="mt-4 font-display text-3xl leading-snug">Every spinning wheel turning today exists because someone chose slow craft over synthetic speed.</p>
+          <a href="mailto:hello@example.com?subject=Becoming%20a%20Patron%20of%20the%20Craft" className="mt-8 inline-flex items-center gap-3 bg-slate px-6 py-3 eyebrow !text-paper transition-opacity hover:opacity-90">
+            Become a Patron of the Craft <span aria-hidden>→</span>
           </a>
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">Directly sustains fair living wages for spinners, weavers and needlework masters in the valley.</p>
           <p className="mt-3 text-xs text-muted-foreground">Placeholder contact address — to be replaced.</p>
         </div>
       </div>
