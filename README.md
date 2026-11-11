@@ -7,17 +7,19 @@ The site should feel like a private Himalayan textile archive / collectible heri
 
 PROCESS STRUCTURE — EXACTLY EIGHT CHAPTERS
 Pre-Loom (five steps):
+
 1. Fibre collection / combing the fine undercoat from Changthangi goats (only describe seasonal, animal-welfare-respectful practices; do not depict shearing if not accurate).
 2. Journey and gathering / movement from pastoral landscape to the processing community (confirm the exact geography in final editorial content; use a location-neutral draft label if uncertain).
 3. Sorting and dehairing by hand.
 4. Carding and combing by hand to prepare fibre.
 5. Hand spinning / doubling yarn on a traditional spinning wheel.
-On-Loom and finishing (three steps):
+   On-Loom and finishing (three steps):
 6. Starching and warping / preparing the loom.
 7. Weaving on a handloom.
 8. Finishing: cleaning/washing, ironing, hand finishing and hand-plucking loose fibres as applicable. Keep the process steps editable because the exact local workflow must be verified with artisans before publication.
 
 CORE EXPERIENCE
+
 - Opening hero: atmospheric Changthang / Himalayan landscape, restrained brand wordmark "Discovering Roots", editorial headline such as "A thread that carries generations", concise mission copy, CTA "Follow the thread". Include a dedicated generous visual area for the full shawl.
 - Main interactive journey: a large shawl-canvas / textile-inspired section where the shawl image or a carefully styled neutral textile placeholder fills a substantial part of the viewport. Overlay an organic embroidered route/thread that connects eight circular waypoints; a small boat marker moves along the path as the visitor scrolls or selects a step. Keep the boat as a subtle navigation metaphor, not a cartoon. Clicking a waypoint opens the corresponding chapter panel with step title, story, artisan/person portrait, documentary image/video slot, caption and optional audio. On desktop use an editorial asymmetric split: shawl/thread map as primary canvas and a chapter story/media panel. On mobile convert to a vertical chronological journey with a persistent compact progress indicator; no horizontal overflow.
 - Clearly divide the route into two named zones: "Before the Loom" (steps 1–5) and "At the Loom" (steps 6–8). Use an elegant textile seam / woven divider between regions.
@@ -58,3 +60,32 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## CMS foundation (Sanity)
+
+The public site continues to use its local, typed demo content until CMS content is connected to a page in a later phase. The server-side CMS loader is ready now and has an intentional all-or-nothing fallback: if Sanity is unavailable or does not contain all eight valid journey chapters, the full local demo experience remains in place.
+
+### Local setup
+
+1. Copy `.env.example` to `.env` locally. Never commit `.env` or an environment file containing a real token.
+2. Set the required server-side values:
+
+   - `SANITY_PROJECT_ID` — Sanity project ID.
+   - `SANITY_DATASET` — dataset to read, normally `production`.
+   - `SANITY_API_VERSION` — optional; defaults to `2025-02-19`.
+
+3. Configure draft preview only when it is needed:
+
+   - `SANITY_API_READ_TOKEN` — optional viewer-role token, used only by server-side draft preview.
+   - `SANITY_PREVIEW_SECRET` — optional long random value used only to sign the short-lived preview cookie.
+
+`SANITY_API_READ_TOKEN` and `SANITY_PREVIEW_SECRET` must never have a `VITE_` prefix, be imported by browser code, or be placed in a public deployment setting. They are read only from server-side modules protected by TanStack Start's server-only import boundary.
+
+`VITE_SANITY_STUDIO_URL` is optional and public. It controls the existing `/studio` link only; it does not grant Studio access. Studio deployment and schemas are intentionally outside this phase.
+
+### Fallback and preview behavior
+
+- Published requests use Sanity's CDN and do not use a token.
+- Draft preview requires both optional preview settings and a valid signed preview cookie issued by `/api/preview/enable`.
+- CMS requests time out after five seconds and return the local demo content on network or configuration errors.
+- Fewer than eight valid, unique chapter steps never partially replace the journey. The local eight-step data is used instead.

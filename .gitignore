@@ -14,11 +14,26 @@ dist-ssr
 .vinxi
 .tanstack/**
 .nitro
+
+# Local environment and deployment secrets. Keep the documented template tracked.
+.env
+.env.*
+!.env.example
+.envrc
+.envrc.*
 *.local
+.dev.vars
+.dev.vars.*
+secrets/
+.secrets/
+config/local.*
+*.pem
+*.key
+*.p12
+*.pfx
 
 # Wrangler / Cloudflare
 .wrangler/
-.dev.vars
 
 # Editor directories and files
 .vscode/*
