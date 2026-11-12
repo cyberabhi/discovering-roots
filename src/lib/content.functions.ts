@@ -10,7 +10,10 @@ import type { CmsHomepage, SiteContent } from "@/lib/sanity/types";
  * the request carries a valid signed preview cookie AND a server read token exists.
  * Falls back to the local demo content with a clear notice on any setup gap.
  */
-export const getSiteContent = createServerFn({ method: "GET" }).handler(async (): Promise<SiteContent> => {
+export const getSiteContent = createServerFn({ method: "GET" }).handler(async () => {
+  // Portable Text permits arbitrary JSON fields typed as `unknown`. Carry the
+  // CMS payload as JSON so RPC serialization never receives those SDK types.
+  const loadContent = async (): Promise<SiteContent> => {
   const { readSanityEnv } = await import("@/lib/sanity/env");
   const env = readSanityEnv();
   const demo = (notice: string, preview = false): SiteContent => ({
@@ -54,10 +57,12 @@ export const getSiteContent = createServerFn({ method: "GET" }).handler(async ()
     console.error("[sanity] content fetch failed", err);
     return demo("Demo content — the CMS could not be reached. Check SANITY_PROJECT_ID / SANITY_DATASET.", preview);
   }
+  };
+  return JSON.stringify(await loadContent());
 });
 
 export const siteContentQuery = queryOptions({
   queryKey: ["site-content"],
-  queryFn: () => getSiteContent(),
+  queryFn: async (): Promise<SiteContent> => JSON.parse(await getSiteContent()),
   staleTime: 60_000,
 });

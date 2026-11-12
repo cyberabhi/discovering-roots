@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-const STUDIO_URL = import.meta.env.VITE_SANITY_STUDIO_URL as string | undefined;
+const STUDIO_URL = import.meta.env["VITE_SANITY_STUDIO_URL"] as string | undefined;
 
 export const Route = createFileRoute("/studio")({
   head: () => ({

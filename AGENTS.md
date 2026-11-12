@@ -28,3 +28,5 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Transport CMS content as JSON through the server function and decode it in the query; Portable Text's arbitrary `unknown` fields cannot satisfy the RPC serializer's static type contract.
