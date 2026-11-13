@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getRequest } from "@tanstack/react-start/server";
+import { getRequest, setResponseHeader } from "@tanstack/react-start/server";
 import { queryOptions } from "@tanstack/react-query";
 import type { SiteContent } from "@/lib/sanity/types";
 
@@ -10,6 +10,9 @@ import type { SiteContent } from "@/lib/sanity/types";
  */
 export const getSiteContent = createServerFn({ method: "GET" }).handler(
   async (): Promise<string> => {
+    setResponseHeader("Cache-Control", "private, no-store, max-age=0");
+    setResponseHeader("Pragma", "no-cache");
+    setResponseHeader("Vary", "Cookie");
     const { loadSiteContent } = await import("@/lib/sanity/content.server");
     const content = await loadSiteContent({ cookieHeader: getRequest().headers.get("cookie") });
     return JSON.stringify(content);
@@ -19,5 +22,5 @@ export const getSiteContent = createServerFn({ method: "GET" }).handler(
 export const siteContentQuery = queryOptions({
   queryKey: ["site-content"],
   queryFn: async (): Promise<SiteContent> => JSON.parse(await getSiteContent()),
-  staleTime: 60_000,
+  staleTime: 0,
 });

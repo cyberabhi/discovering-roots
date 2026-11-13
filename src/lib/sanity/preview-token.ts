@@ -9,7 +9,13 @@ export const PREVIEW_MAX_AGE_SECONDS = 60 * 60;
 const enc = new TextEncoder();
 
 async function hmac(secret: string, message: string): Promise<string> {
-  const key = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
   const sig = await crypto.subtle.sign("HMAC", key, enc.encode(message));
   return Array.from(new Uint8Array(sig), (b) => b.toString(16).padStart(2, "0")).join("");
 }
@@ -19,7 +25,11 @@ export async function signPreviewToken(secret: string, expiresAtMs: number): Pro
   return `${exp}.${await hmac(secret, `preview:${exp}`)}`;
 }
 
-export async function verifyPreviewToken(secret: string | undefined, token: string | undefined, nowMs = Date.now()): Promise<boolean> {
+export async function verifyPreviewToken(
+  secret: string | undefined,
+  token: string | undefined,
+  nowMs = Date.now(),
+): Promise<boolean> {
   if (!secret || !token) return false;
   const [exp, sig] = token.split(".");
   if (!exp || !sig || !/^\d+$/.test(exp) || Number(exp) <= nowMs) return false;
@@ -40,6 +50,5 @@ export function readCookie(header: string | null, name: string): string | undefi
 }
 
 export function previewCookieHeader(value: string, maxAge: number): string {
-  // SameSite=None + Secure so the cookie works inside Studio's Presentation iframe.
-  return `${PREVIEW_COOKIE}=${encodeURIComponent(value)}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=${maxAge}`;
+  return `${PREVIEW_COOKIE}=${encodeURIComponent(value)}; Path=/; HttpOnly; Secure; SameSite=None; Partitioned; Max-Age=${maxAge}`;
 }

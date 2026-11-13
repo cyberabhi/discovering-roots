@@ -1,13 +1,13 @@
 import { createClient, type SanityClient } from "@sanity/client";
 import type { SanityEnv } from "./env";
 
-/** Public client: published documents only, CDN-cached, no token. */
+/** Public client: published documents only, uncached, and no token. */
 export function createPublishedClient(env: SanityEnv): SanityClient {
   return createClient({
     projectId: env.projectId,
     dataset: env.dataset,
     apiVersion: env.apiVersion,
-    useCdn: true,
+    useCdn: false,
     perspective: "published",
   });
 }

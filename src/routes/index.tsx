@@ -44,7 +44,11 @@ function Index() {
       >
         Skip to content
       </a>
-      <SiteHeader brandName={content.settings.brandName} navigation={content.settings.navigation} />
+      <SiteHeader
+        brandName={content.settings.brandName}
+        navigation={content.settings.navigation}
+        previewMode={content.preview}
+      />
       <main id="main">
         <HeroSection hero={content.settings.hero} shawl={content.shawl} />
         <OriginSection />

@@ -86,6 +86,17 @@ describe("homepage content integration", () => {
       "#craft",
     );
     expect(document.getElementById("craft")).toBeInTheDocument();
+    expect(screen.queryByText(/Draft preview/)).not.toBeInTheDocument();
+  });
+
+  it("shows a clear exit action when the homepage is loaded in draft preview", async () => {
+    await renderHomepage(createDemoContent("Draft preview fallback", true));
+
+    expect(screen.getByRole("status")).toHaveTextContent("Draft preview");
+    expect(screen.getByRole("link", { name: "Return to published site" })).toHaveAttribute(
+      "href",
+      "/api/preview/disable",
+    );
   });
 
   it("renders mapped Sanity content in the existing homepage sections", async () => {

@@ -83,9 +83,9 @@ The homepage loads content through the server-side CMS loader. When Sanity is co
 
 ### Sanity Studio
 
-The private editorial Studio is integrated at `/studio` and uses the existing Sanity project (`1md6mwa7`, dataset `production`). Start the website with `npm run dev`, then open `http://localhost:3000/studio` (use the local port printed by Vite if it differs). Studio sign-in is provided by Sanity; only users invited to the project can access editorial tools. The route itself is not a substitute for Sanity permissions.
+The private editorial Studio is integrated at `/studio` and uses the existing Sanity project (`1md6mwa7`, dataset `production`). Start the website with `npm run dev`, then open the local `/studio` URL printed by Vite. Studio sign-in is provided by Sanity; only users invited to the project can access editorial tools. The route itself is not a substitute for Sanity permissions.
 
-On first use, the Studio may show Sanity's **Connect this studio to your project** screen. Choose **Add development host** for local work, or **Register this studio** for the secured production editor-facing Studio, then sign in with an invited Sanity account. Add the exact origins (for local Vite, `http://localhost:8080` and/or `http://127.0.0.1:8080`) and each production Studio origin to the project's allowed CORS origins in Sanity Manage. In Manage → Members, assign the least-privileged role that matches each person's work (for example, Editor for trusted content editors); do not create or share a browser API token. The production Sanity project must also grant those roles access to the `production` dataset.
+On first use, the Studio may show Sanity's **Connect this studio to your project** screen. Choose **Add development host** for local work, or **Register this studio** for the secured production editor-facing Studio, then sign in with an invited Sanity account. Add the exact local and production origins to the project's allowed CORS origins in Sanity Manage and enable credentialed requests for the Studio. In Manage → Members, assign the least-privileged role that matches each person's work (for example, Editor for trusted content editors); do not create or share a browser API token. The production Sanity project must also grant those roles access to the `production` dataset.
 
 The Studio navigation follows the editing workflow:
 
@@ -102,8 +102,14 @@ Sanity account membership and dataset roles are managed in Sanity Manage, not in
 
 ### Fallback and preview behavior
 
-- Published requests use Sanity's CDN and do not use a token.
-- Draft preview requires both optional preview settings and a valid signed preview cookie issued by `/api/preview/enable`.
+- The Studio's **Website Preview** tool opens the real homepage in Presentation mode. The preview URL defaults to the current Studio origin, so the embedded Studio and preview use the same site deployment.
+- To enable the preview handshake on the server, configure `SANITY_API_READ_TOKEN` with read access to draft/version documents and Sanity's preview URL secret documents, and set a long random `SANITY_PREVIEW_SECRET` used to sign the session cookie. These values belong only in the server deployment's secret settings. If either is missing, preview activation returns an explicit setup error; public content remains available.
+- The Presentation Tool validates a short-lived Sanity-generated secret server-side before issuing an HTTP-only, Secure, SameSite=None, Partitioned cookie. The cookie expires after one hour and contains no Sanity token or draft data. The enable route strips preview secrets from its redirect and refuses external redirect targets.
+- The homepage content response is marked `private, no-store` and varies by cookie. Sanity requests bypass its CDN so draft edits and newly published content are not held behind application or Sanity CDN response caches.
+- While preview is active, a banner identifies the session as a draft preview and provides **Return to published site**. This clears the preview cookie and redirects to the public homepage. The banner is not shown for ordinary public requests.
+- In Presentation, select a document and inspect the homepage preview. Save drafts to preview them; publish from the document's Sanity Studio actions when editorial checks are complete. Refresh or refocus the preview if it needs to fetch a newly saved draft or published change. Publishing updates what public requests fetch; it does not grant visitors access to drafts.
 - Public homepage queries include only chapters marked published and verified with artisans, published artisan profiles with granted identity consent, and quotations with separate quote consent. Signed preview can include draft chapters and profiles, but withdrawn-consent profiles remain excluded.
 - CMS requests time out after five seconds and return the local demo content on network or configuration errors.
 - Fewer than eight valid, unique published chapter steps never partially replace the journey. The local eight-step data is used instead.
+
+If Presentation cannot connect, confirm that the Studio deployment origin is allowed in Sanity Manage, the signed-in account has access to the project and dataset, and the server has the two preview settings above. Do not copy tokens or preview secrets into URLs, browser settings, or chat. A locally available Studio or a valid preview endpoint does not by itself prove that production Sanity authentication and publishing are configured.

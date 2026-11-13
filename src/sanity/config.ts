@@ -1,5 +1,6 @@
 import { defineConfig } from "sanity";
 import type { NewDocumentOptionsContext, TemplateItem } from "sanity";
+import { presentationTool } from "sanity/presentation";
 import { structureTool } from "sanity/structure";
 import { JOURNEY_STEPS } from "./journey";
 import { schemaTypes } from "./schemaTypes";
@@ -45,7 +46,19 @@ export const studioConfig = defineConfig({
   projectId: "1md6mwa7",
   dataset: "production",
   basePath: "/studio",
-  plugins: [structureTool({ structure: studioStructure })],
+  plugins: [
+    structureTool({ structure: studioStructure }),
+    presentationTool({
+      title: "Website Preview",
+      previewUrl: {
+        initial: ({ origin }) => origin,
+        previewMode: {
+          enable: "/api/preview/enable",
+          disable: "/api/preview/disable",
+        },
+      },
+    }),
+  ],
   schema: {
     types: schemaTypes,
     templates: (previous) => [

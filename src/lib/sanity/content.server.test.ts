@@ -3,7 +3,8 @@ import { chapters as demoChapters } from "@/data/chapters";
 import { demoSettings } from "@/data/demo-content";
 import { loadSiteContent } from "./content.server";
 import { signPreviewToken } from "./preview-token";
-import type { CmsChapter, CmsHomepage } from "./types";
+import { mapArtisanPortrait } from "./map";
+import type { CmsArtisan, CmsChapter, CmsHomepage } from "./types";
 
 const configuredEnv = {
   configured: true,
@@ -133,5 +134,46 @@ describe("loadSiteContent", () => {
     expect(content.preview).toBe(true);
     expect(previewRequest).toBe(true);
     expect(content.chapters[0]?.title).toBe("Preview-only draft");
+  });
+
+  it("rejects expired preview cookies and keeps using published content", async () => {
+    const previewSecret = "server-only-secret";
+    const expiredCookie = await signPreviewToken(previewSecret, Date.now() - 1);
+    let previewRequest: boolean | undefined;
+    const content = await loadSiteContent({
+      env: { ...configuredEnv, readToken: "server-only-token", previewSecret },
+      cookieHeader: `dr_preview=${expiredCookie}`,
+      fetchHomepage: async (_env, preview) => {
+        previewRequest = preview;
+        return { chapters: completeChapters(), settings: null, shawl: null };
+      },
+    });
+
+    expect(content.preview).toBe(false);
+    expect(previewRequest).toBe(false);
+  });
+
+  it("keeps identity and quotation consent separate in preview", () => {
+    const urlFor = () => undefined;
+    const artisan: CmsArtisan = {
+      _id: "draft-artisan",
+      displayName: "Draft artisan",
+      role: "Weaver",
+      consentStatus: "granted",
+      quoteConsent: false,
+      quote: "Not approved for publication",
+    };
+    const withdrawn: CmsArtisan = {
+      ...artisan,
+      _id: "withdrawn-artisan",
+      consentStatus: "withdrawn",
+      quoteConsent: true,
+    };
+
+    expect(mapArtisanPortrait(artisan, urlFor, true)?.voice).toBeUndefined();
+    expect(mapArtisanPortrait(withdrawn, urlFor, true)).toBeUndefined();
+    expect(
+      mapArtisanPortrait({ ...artisan, consentStatus: "pending" }, urlFor, true),
+    ).toBeUndefined();
   });
 });
