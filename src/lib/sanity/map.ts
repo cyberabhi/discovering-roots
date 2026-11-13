@@ -61,12 +61,19 @@ export function mapImage(
   return { src, alt: s(img.alt) ?? fallbackAlt, caption: s(img.caption), credit: s(img.credit) };
 }
 
-/** An artisan is shown only with granted consent; a quote additionally needs quote consent. */
+/** Only explicitly published, consented profiles and separately consented quotes are shown. */
 export function mapArtisanPortrait(
   a: CmsArtisan | null | undefined,
   urlFor: UrlFor,
+  preview = false,
 ): Chapter["portrait"] | undefined {
-  if (!a || a.consentStatus !== "granted") return undefined;
+  if (
+    !a ||
+    (a.publicationStatus !== "published" && !preview) ||
+    a.publicationStatus === "withdrawn" ||
+    a.consentStatus !== "granted"
+  )
+    return undefined;
   const img = mapImage(a.portrait, urlFor, `Portrait of ${s(a.displayName) ?? "an artisan"}`, 600);
   const name = s(a.displayName);
   const role = [name, s(a.role)].filter(Boolean).join(" — ") || "Artisan";
@@ -81,7 +88,7 @@ export function mapArtisanPortrait(
 
 const isFileVideo = (url: string) => /\.(mp4|webm|mov|m4v)(\?|$)/i.test(url);
 
-export function mapChapter(c: CmsChapter, urlFor: UrlFor): Chapter | null {
+export function mapChapter(c: CmsChapter, urlFor: UrlFor, preview = false): Chapter | null {
   const n = c.stepNumber;
   if (!n || n < 1 || n > 8 || !s(c.title)) return null;
   const fallback = demoChapters[n - 1]!;
@@ -103,7 +110,9 @@ export function mapChapter(c: CmsChapter, urlFor: UrlFor): Chapter | null {
         alt: hero?.alt ?? fallback.media.alt,
         credit: hero?.credit,
       };
-  const portrait = (c.artisans ?? []).map((a) => mapArtisanPortrait(a, urlFor)).find(Boolean);
+  const portrait = (c.artisans ?? [])
+    .map((a) => mapArtisanPortrait(a, urlFor, preview))
+    .find(Boolean);
   const audioUrl = safeMediaUrl(c.audio?.fileUrl) ?? safeMediaUrl(c.audio?.externalUrl);
   return {
     id: s(c.slug) ?? fallback.id,
@@ -129,9 +138,10 @@ export function mapChapter(c: CmsChapter, urlFor: UrlFor): Chapter | null {
 export function mapChapters(
   raw: CmsChapter[] | null | undefined,
   urlFor: UrlFor,
+  preview = false,
 ): Chapter[] | null {
   const mapped = (raw ?? [])
-    .map((c) => mapChapter(c, urlFor))
+    .map((c) => mapChapter(c, urlFor, preview))
     .filter((c): c is Chapter => c !== null);
   const sorted = [...mapped].sort((a, b) => a.number - b.number);
   const complete = sorted.length === 8 && sorted.every((c, i) => c.number === i + 1);

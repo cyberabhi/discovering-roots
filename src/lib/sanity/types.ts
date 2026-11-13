@@ -27,6 +27,7 @@ export interface CmsArtisan {
   quote?: string | null;
   quoteConsent?: boolean | null;
   consentStatus?: "pending" | "granted" | "withdrawn" | null;
+  publicationStatus?: "draft" | "published" | "withdrawn" | null;
   credit?: string | null;
 }
 
@@ -73,6 +74,11 @@ export interface CmsSettings {
   footer?: { text?: string | null } | null;
   contact?: { email?: string | null; phone?: string | null } | null;
   socialLinks?: { platform?: string | null; url?: string | null }[] | null;
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+    defaultShareImage?: CmsImage | null;
+  } | null;
 }
 
 export interface CmsShawl {
@@ -103,7 +109,14 @@ export interface ViewImage {
 export interface SiteSettingsView {
   brandName: string;
   tagline: string;
-  hero: { eyebrow: string; title: string; titleEmphasis: string; intro: string; ctaLabel: string; image?: ViewImage | undefined };
+  hero: {
+    eyebrow: string;
+    title: string;
+    titleEmphasis: string;
+    intro: string;
+    ctaLabel: string;
+    image?: ViewImage | undefined;
+  };
   navigation: { label: string; href: string }[];
   cta: {
     eyebrow: string;

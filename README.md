@@ -81,11 +81,29 @@ The homepage loads content through the server-side CMS loader. When Sanity is co
 
 `SANITY_API_READ_TOKEN` and `SANITY_PREVIEW_SECRET` must never have a `VITE_` prefix, be imported by browser code, or be placed in a public deployment setting. They are read only from server-side modules protected by TanStack Start's server-only import boundary.
 
-`VITE_SANITY_STUDIO_URL` is optional and public. It controls the existing `/studio` link only; it does not grant Studio access. Studio deployment and schemas are intentionally outside this phase.
+### Sanity Studio
+
+The private editorial Studio is integrated at `/studio` and uses the existing Sanity project (`1md6mwa7`, dataset `production`). Start the website with `npm run dev`, then open `http://localhost:3000/studio` (use the local port printed by Vite if it differs). Studio sign-in is provided by Sanity; only users invited to the project can access editorial tools. The route itself is not a substitute for Sanity permissions.
+
+On first use, the Studio may show Sanity's **Connect this studio to your project** screen. Choose **Add development host** for local work, or **Register this studio** for the secured production editor-facing Studio, then sign in with an invited Sanity account. Add the exact origins (for local Vite, `http://localhost:8080` and/or `http://127.0.0.1:8080`) and each production Studio origin to the project's allowed CORS origins in Sanity Manage. In Manage → Members, assign the least-privileged role that matches each person's work (for example, Editor for trusted content editors); do not create or share a browser API token. The production Sanity project must also grant those roles access to the `production` dataset.
+
+The Studio navigation follows the editing workflow:
+
+- **Website Settings and Homepage** — brand, hero, navigation, preservation message, footer, contact and SEO.
+- **Eight-Step Journey** — eight stable chapter documents in a fixed order. Step number and process zone are read-only; chapters cannot be deleted from Studio. New chapters default to draft and must be verified before appearing publicly.
+- **Artisan Stories** — profile information, related chapters, identity consent, separate quotation consent and publication status.
+- **Shawl Collection** — verified descriptions, photographs, materials and provenance.
+- **Documentary Media** — reusable image, video and audio records with credits, usage rights and consent.
+- **Visual Pages (future)** — reserved page configuration data; this is not a page builder and does not integrate Puck.
+
+To edit, select an item in the Studio navigation, edit its fields, and publish through Sanity when its validation requirements are met. Upload or replace photographs and recordings in the corresponding image/file fields; image alternative text and credit are required, and published media needs rights and consent information. Do not enter personal consent records or sensitive details into public-facing fields or editorial notes.
+
+Sanity account membership and dataset roles are managed in Sanity Manage, not in this website. Do not place write tokens or private credentials in browser environment variables. Studio project and dataset identifiers are public configuration, not secrets.
 
 ### Fallback and preview behavior
 
 - Published requests use Sanity's CDN and do not use a token.
 - Draft preview requires both optional preview settings and a valid signed preview cookie issued by `/api/preview/enable`.
+- Public homepage queries include only chapters marked published and verified with artisans, published artisan profiles with granted identity consent, and quotations with separate quote consent. Signed preview can include draft chapters and profiles, but withdrawn-consent profiles remain excluded.
 - CMS requests time out after five seconds and return the local demo content on network or configuration errors.
-- Fewer than eight valid, unique chapter steps never partially replace the journey. The local eight-step data is used instead.
+- Fewer than eight valid, unique published chapter steps never partially replace the journey. The local eight-step data is used instead.

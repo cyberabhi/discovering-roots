@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { demoSettings } from "@/data/demo-content";
-import { mapChapters, mapSettings } from "./map";
+import { mapArtisanPortrait, mapChapters, mapSettings } from "./map";
 import type { CmsChapter, CmsSettings } from "./types";
 
 const urlFor = () => "https://cdn.sanity.io/images/example.jpg";
@@ -26,6 +26,17 @@ describe("Sanity chapter mapping", () => {
   });
 
   it("filters artisan identity and quotes unless their consent is granted", () => {
+    const draftArtisan = {
+      _id: "draft",
+      displayName: "Draft artisan",
+      consentStatus: "granted" as const,
+      publicationStatus: "draft" as const,
+    };
+    expect(mapArtisanPortrait(draftArtisan, urlFor)).toBeUndefined();
+    expect(mapArtisanPortrait(draftArtisan, urlFor, true)).toMatchObject({
+      role: "Draft artisan",
+    });
+
     const raw = completeChapters();
     raw[0] = {
       ...raw[0]!,
@@ -42,6 +53,7 @@ describe("Sanity chapter mapping", () => {
           displayName: "Tsering",
           role: "Spinner",
           consentStatus: "granted",
+          publicationStatus: "published",
           quoteConsent: false,
           quote: "This quote still needs consent",
           portrait: { asset: { _ref: "image-asset" }, alt: "Portrait of Tsering" },

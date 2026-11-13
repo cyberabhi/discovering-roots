@@ -56,7 +56,7 @@ async function withTimeout<T>(operation: Promise<T>, timeoutMs = CMS_FETCH_TIMEO
 /** Fetches Sanity on the server only. Preview clients are selected only after cookie verification. */
 export const fetchHomepageFromSanity: HomepageFetcher = async (env, preview) => {
   const client = preview ? createPreviewClient(env) : createPublishedClient(env);
-  return withTimeout(client.fetch<CmsHomepage>(HOMEPAGE_QUERY));
+  return withTimeout(client.fetch<CmsHomepage>(HOMEPAGE_QUERY, { preview }));
 };
 
 async function hasValidPreviewSession(
@@ -90,7 +90,7 @@ export async function loadSiteContent(options: LoadSiteContentOptions = {}): Pro
     const raw = await fetchHomepage(env, preview);
     const urlFor = (img: Parameters<typeof imageUrl>[1], width?: number) =>
       imageUrl(env, img, width);
-    const chapters = mapChapters(raw.chapters, urlFor);
+    const chapters = mapChapters(raw.chapters, urlFor, preview);
 
     if (!chapters) {
       const found = raw.chapters?.length ?? 0;

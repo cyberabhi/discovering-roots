@@ -1,12 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { studioConfig } from "@/sanity/config";
 
-const STUDIO_URL = import.meta.env["VITE_SANITY_STUDIO_URL"] as string | undefined;
+const SanityStudio = lazy(async () => {
+  const { Studio } = await import("sanity");
+  return { default: Studio };
+});
 
 export const Route = createFileRoute("/studio")({
   head: () => ({
     meta: [
       { title: "Editorial Studio — Discovering Roots" },
-      { name: "description", content: "Private editorial studio for Discovering Roots editors. Sign-in with an invited Sanity account is required." },
+      {
+        name: "description",
+        content:
+          "Private editorial studio for Discovering Roots editors. Sign-in with an invited Sanity account is required.",
+      },
       { name: "robots", content: "noindex, nofollow" },
       { property: "og:title", content: "Editorial Studio — Discovering Roots" },
       { property: "og:description", content: "Private editorial studio for invited editors." },
@@ -18,27 +27,34 @@ export const Route = createFileRoute("/studio")({
 });
 
 function StudioPage() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => setIsMounted(true), []);
+
   return (
-    <main className="weave flex min-h-screen items-center justify-center px-5 py-20">
-      <div className="max-w-xl">
-        <p className="eyebrow">Private · Editors only</p>
-        <h1 className="mt-4 text-4xl leading-tight md:text-5xl">Editorial Studio</h1>
-        <p className="mt-6 leading-relaxed text-muted-foreground">
-          Chapters, artisans, shawls, documentary media and site settings are edited in Sanity Studio. Access requires signing in with a Sanity account that has been invited to this project — there is no public login or shared password.
+    <main className="h-dvh min-h-[480px] w-screen overflow-hidden bg-white text-slate-950">
+      {isMounted ? (
+        <Suspense
+          fallback={
+            <p className="p-6 text-sm" role="status">
+              Loading the private editorial studio…
+            </p>
+          }
+        >
+          <SanityStudio config={studioConfig} />
+        </Suspense>
+      ) : (
+        <p className="p-6 text-sm" role="status">
+          Loading the private editorial studio…
         </p>
-        {STUDIO_URL ? (
-          <a href={STUDIO_URL} rel="noopener" className="mt-8 inline-flex items-center gap-3 bg-slate px-6 py-3 eyebrow !text-paper transition-opacity hover:opacity-90">
-            Open Studio (sign-in required) <span aria-hidden>→</span>
-          </a>
-        ) : (
-          <p className="mt-8 border-l-2 border-thread pl-4 text-sm text-muted-foreground">
-            Setup required: the Studio address is not configured yet. Deploy the Studio (see README → “Sanity Studio”) and set <code>VITE_SANITY_STUDIO_URL</code>.
-          </p>
-        )}
-        <p className="mt-10">
-          <Link to="/" className="eyebrow underline underline-offset-4">← Back to the site</Link>
-        </p>
-      </div>
+      )}
+      <Link
+        to="/"
+        aria-label="Return to Discovering Roots"
+        className="sr-only focus:not-sr-only focus:fixed focus:bottom-4 focus:left-4 focus:z-[100] focus:bg-white focus:p-3 focus:text-slate-950"
+      >
+        Return to website
+      </Link>
     </main>
   );
 }

@@ -101,6 +101,7 @@ describe("homepage content integration", () => {
               displayName: "CMS Artisan",
               role: "Weaver",
               consentStatus: "granted",
+              publicationStatus: "published",
               portrait: {
                 asset: { _ref: "image-abc123-600x800-jpg" },
                 alt: "Portrait of CMS Artisan",
