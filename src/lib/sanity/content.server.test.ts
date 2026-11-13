@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { chapters as demoChapters } from "@/data/chapters";
 import { demoSettings } from "@/data/demo-content";
 import { loadSiteContent } from "./content.server";
+import { signPreviewToken } from "./preview-token";
 import type { CmsChapter, CmsHomepage } from "./types";
 
 const configuredEnv = {
@@ -27,6 +28,20 @@ function completeChapters(): CmsChapter[] {
 }
 
 describe("loadSiteContent", () => {
+  it("falls back to demo content when Sanity configuration is missing", async () => {
+    const content = await loadSiteContent({
+      env: {
+        ...configuredEnv,
+        configured: false,
+        missing: ["SANITY_PROJECT_ID", "SANITY_DATASET"],
+      },
+    });
+
+    expect(content.source).toBe("demo");
+    expect(content.chapters).toBe(demoChapters);
+    expect(content.notice).toContain("SANITY_PROJECT_ID");
+  });
+
   it("returns the complete local demo model when Sanity has incomplete chapters", async () => {
     const partial: CmsHomepage = {
       chapters: completeChapters().slice(0, 7),
@@ -68,5 +83,55 @@ describe("loadSiteContent", () => {
     expect(content.source).toBe("sanity");
     expect(content.chapters).toHaveLength(8);
     expect(content.notice).toBeNull();
+  });
+
+  it("uses only the published fetch path without a valid signed preview cookie", async () => {
+    let previewRequest: boolean | undefined;
+    const content = await loadSiteContent({
+      env: {
+        ...configuredEnv,
+        readToken: "server-only-token",
+        previewSecret: "server-only-secret",
+      },
+      cookieHeader: "dr_preview=forged",
+      fetchHomepage: async (_env, preview) => {
+        previewRequest = preview;
+        const chapters = completeChapters();
+        chapters[0] = {
+          ...chapters[0]!,
+          title: preview ? "Preview-only draft" : "Published chapter",
+        };
+        return { chapters, settings: null, shawl: null };
+      },
+    });
+
+    expect(content.source).toBe("sanity");
+    expect(content.preview).toBe(false);
+    expect(previewRequest).toBe(false);
+    expect(content.chapters[0]?.title).toBe("Published chapter");
+    expect(content.chapters[0]?.title).not.toBe("Preview-only draft");
+  });
+
+  it("enables the preview fetch path only for a valid signed preview cookie", async () => {
+    const previewSecret = "server-only-secret";
+    const cookie = await signPreviewToken(previewSecret, Date.now() + 60_000);
+    let previewRequest: boolean | undefined;
+    const content = await loadSiteContent({
+      env: { ...configuredEnv, readToken: "server-only-token", previewSecret },
+      cookieHeader: `dr_preview=${cookie}`,
+      fetchHomepage: async (_env, preview) => {
+        previewRequest = preview;
+        const chapters = completeChapters();
+        chapters[0] = {
+          ...chapters[0]!,
+          title: preview ? "Preview-only draft" : "Published chapter",
+        };
+        return { chapters, settings: null, shawl: null };
+      },
+    });
+
+    expect(content.preview).toBe(true);
+    expect(previewRequest).toBe(true);
+    expect(content.chapters[0]?.title).toBe("Preview-only draft");
   });
 });

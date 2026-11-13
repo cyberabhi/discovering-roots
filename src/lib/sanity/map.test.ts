@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { mapChapters } from "./map";
-import type { CmsChapter } from "./types";
+import { demoSettings } from "@/data/demo-content";
+import { mapChapters, mapSettings } from "./map";
+import type { CmsChapter, CmsSettings } from "./types";
 
 const urlFor = () => "https://cdn.sanity.io/images/example.jpg";
 
@@ -54,5 +55,43 @@ describe("Sanity chapter mapping", () => {
       alt: "Portrait of Tsering",
     });
     expect(mapped?.[0]?.portrait?.voice).toBeUndefined();
+  });
+
+  it("uses demo story and captions when optional chapter copy is missing", () => {
+    const raw = completeChapters();
+    raw[0] = { ...raw[0]!, intro: null };
+
+    const mapped = mapChapters(raw, urlFor);
+
+    expect(mapped?.[0]?.story).toBeTruthy();
+    expect(mapped?.[0]?.caption).toBeTruthy();
+  });
+
+  it("rejects unsafe external media URLs", () => {
+    const raw = completeChapters();
+    raw[0] = {
+      ...raw[0]!,
+      documentaryVideo: { externalUrl: "javascript:alert(1)" },
+    };
+
+    const mapped = mapChapters(raw, urlFor);
+
+    expect(mapped?.[0]?.media.externalUrl).toBeUndefined();
+  });
+
+  it("uses safe links only for CMS navigation and calls to action", () => {
+    const settings: CmsSettings = {
+      navigation: [
+        { label: "Craft", href: "#craft" },
+        { label: "Unsafe", href: "javascript:alert(1)" },
+        { label: "Protocol-relative", href: "//example.com" },
+      ],
+      preservationCta: { buttonHref: "javascript:alert(1)" },
+    };
+
+    const mapped = mapSettings(settings, urlFor);
+
+    expect(mapped.navigation).toEqual([{ label: "Craft", href: "#craft" }]);
+    expect(mapped.cta.buttonHref).toBe(demoSettings.cta.buttonHref);
   });
 });

@@ -63,7 +63,7 @@ npm run dev
 
 ## CMS foundation (Sanity)
 
-The public site continues to use its local, typed demo content until CMS content is connected to a page in a later phase. The server-side CMS loader is ready now and has an intentional all-or-nothing fallback: if Sanity is unavailable or does not contain all eight valid journey chapters, the full local demo experience remains in place.
+The homepage loads content through the server-side CMS loader. When Sanity is configured and provides all eight valid journey chapters, mapped settings, chapter details, consented artisan portraits and shawl media populate the existing homepage sections. If configuration, the CMS request, or required chapter content is unavailable or incomplete, the local typed demo experience remains in place. Optional CMS fields and media fall back to the existing editorial copy and placeholders.
 
 ### Local setup
 
