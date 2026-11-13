@@ -5,9 +5,16 @@ import { MediaSlot } from "./MediaSlot";
 interface HeroSectionProps {
   hero: SiteSettingsView["hero"];
   shawl: ShawlView | null;
+  ctaHref?: string;
+  includeOrigin?: boolean;
 }
 
-export function HeroSection({ hero, shawl }: HeroSectionProps) {
+export function HeroSection({
+  hero,
+  shawl,
+  ctaHref = "#craft",
+  includeOrigin = true,
+}: HeroSectionProps) {
   return (
     <section id="top" aria-labelledby="hero-title" className="relative">
       <div className="relative flex min-h-[92vh] items-end overflow-hidden pt-16">
@@ -31,7 +38,7 @@ export function HeroSection({ hero, shawl }: HeroSectionProps) {
             {hero.intro}
           </p>
           <a
-            href="#craft"
+            href={ctaHref}
             className="mt-9 inline-flex items-center gap-3 border border-paper/60 px-6 py-3 eyebrow !text-paper transition-colors hover:bg-paper hover:!text-slate"
           >
             {hero.ctaLabel} <span aria-hidden>↓</span>
@@ -39,37 +46,39 @@ export function HeroSection({ hero, shawl }: HeroSectionProps) {
         </div>
       </div>
 
-      <div
-        id="story"
-        className="mx-auto grid max-w-[1440px] gap-10 px-5 py-20 md:grid-cols-12 md:px-10 md:py-28"
-      >
-        <div className="md:col-span-4 md:pt-10">
-          <p className="eyebrow">The Story</p>
-          <h2 className="mt-4 text-4xl leading-tight md:text-5xl">
-            The shawl is a map of its own making.
-          </h2>
-          <p className="mt-6 leading-relaxed text-muted-foreground">
-            Its embroidery depicts landscape, goats, people, hand processes and the loom. We follow
-            that thread, chapter by chapter, through the hands that make it.
-          </p>
+      {includeOrigin && (
+        <div
+          id="story"
+          className="mx-auto grid max-w-[1440px] gap-10 px-5 py-20 md:grid-cols-12 md:px-10 md:py-28"
+        >
+          <div className="md:col-span-4 md:pt-10">
+            <p className="eyebrow">The Story</p>
+            <h2 className="mt-4 text-4xl leading-tight md:text-5xl">
+              The shawl is a map of its own making.
+            </h2>
+            <p className="mt-6 leading-relaxed text-muted-foreground">
+              Its embroidery depicts landscape, goats, people, hand processes and the loom. We
+              follow that thread, chapter by chapter, through the hands that make it.
+            </p>
+          </div>
+          <figure className="md:col-span-8">
+            <MediaSlot
+              kind="shawl"
+              src={shawl?.mainImage?.src}
+              label="Full shawl photograph (supplied reference)"
+              alt={
+                shawl?.mainImage?.alt ??
+                "Placeholder for the full embroidered Pashmina shawl laid flat"
+              }
+              className="aspect-[4/5] w-full md:aspect-[16/11]"
+            />
+            <figcaption className="mt-3 eyebrow">
+              {shawl?.mainImage?.caption ??
+                "Plate I — The complete shawl. Real photograph to be placed here."}
+            </figcaption>
+          </figure>
         </div>
-        <figure className="md:col-span-8">
-          <MediaSlot
-            kind="shawl"
-            src={shawl?.mainImage?.src}
-            label="Full shawl photograph (supplied reference)"
-            alt={
-              shawl?.mainImage?.alt ??
-              "Placeholder for the full embroidered Pashmina shawl laid flat"
-            }
-            className="aspect-[4/5] w-full md:aspect-[16/11]"
-          />
-          <figcaption className="mt-3 eyebrow">
-            {shawl?.mainImage?.caption ??
-              "Plate I — The complete shawl. Real photograph to be placed here."}
-          </figcaption>
-        </figure>
-      </div>
+      )}
     </section>
   );
 }

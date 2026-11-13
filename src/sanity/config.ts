@@ -1,8 +1,9 @@
-import { defineConfig } from "sanity";
+import { defineConfig, definePlugin } from "sanity";
 import type { NewDocumentOptionsContext, TemplateItem } from "sanity";
 import { presentationTool } from "sanity/presentation";
 import { structureTool } from "sanity/structure";
 import { JOURNEY_STEPS } from "./journey";
+import { visualPageTool } from "./puck/tool";
 import { schemaTypes } from "./schemaTypes";
 import { studioStructure } from "./structure";
 
@@ -20,7 +21,7 @@ export const chapterInitialValueTemplates = JOURNEY_STEPS.map((step) => ({
   },
 }));
 
-const fixedDocumentTypes = new Set(["siteSettings", "journeyChapter"]);
+const fixedDocumentTypes = new Set(["siteSettings", "journeyChapter", "visualPage"]);
 
 export function filterNewDocumentOptions(
   previous: TemplateItem[],
@@ -30,6 +31,7 @@ export function filterNewDocumentOptions(
     const fixedTemplateIds = new Set([
       "siteSettings",
       "journeyChapter",
+      "visualPage",
       ...chapterInitialValueTemplates.map(({ id }) => id),
     ]);
     return previous.filter((option) => !fixedTemplateIds.has(option.templateId));
@@ -47,6 +49,10 @@ export const studioConfig = defineConfig({
   dataset: "production",
   basePath: "/studio",
   plugins: [
+    definePlugin({
+      name: "discovering-roots-visual-page-editor",
+      tools: [visualPageTool],
+    }),
     structureTool({ structure: studioStructure }),
     presentationTool({
       title: "Website Preview",
@@ -56,6 +62,9 @@ export const studioConfig = defineConfig({
           enable: "/api/preview/enable",
           disable: "/api/preview/disable",
         },
+      },
+      resolve: {
+        mainDocuments: [{ type: "visualPage", route: "/pages/:slug" }],
       },
     }),
   ],

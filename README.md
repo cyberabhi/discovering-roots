@@ -94,7 +94,12 @@ The Studio navigation follows the editing workflow:
 - **Artisan Stories** — profile information, related chapters, identity consent, separate quotation consent and publication status.
 - **Shawl Collection** — verified descriptions, photographs, materials and provenance.
 - **Documentary Media** — reusable image, video and audio records with credits, usage rights and consent.
-- **Visual Pages (future)** — reserved page configuration data; this is not a page builder and does not integrate Puck.
+- **Visual Pages** — Sanity documents for pages built in the private Puck editor.
+- **Visual Page Editor** — a controlled drag-and-drop editor that uses approved site components and the Documentary Media library.
+
+To create a visual page, open **Visual Page Editor** in the Studio tool navigation, choose **Create page**, enter a title and unique page path, and add sections from the Storytelling, Craft and people, and Closing sections groups. Image, video, artisan, and shawl choices come from eligible Sanity content; the editor does not accept arbitrary HTML or custom components. Save a draft to persist work without making it public. Use the Studio **Website Preview** Presentation tool to inspect the draft at its `/pages/<path>` route, then choose **Publish** in the page editor when it is approved. Publishing writes the approved configuration to the published Sanity document and removes its draft in one revision-checked transaction.
+
+Visual-page publishing uses the signed-in Sanity Studio session and the editor's Sanity dataset permissions; the website has no anonymous write endpoint and no browser write token. Draft routes are available only in an authorized preview session. Public requests load published page documents and published, consent-cleared references only. The existing homepage and its eight-step journey are unchanged by visual-page edits. Changes to Visual Page schemas or stored page configuration should be made through the Studio editor; avoid hand-editing the JSON field.
 
 To edit, select an item in the Studio navigation, edit its fields, and publish through Sanity when its validation requirements are met. Upload or replace photographs and recordings in the corresponding image/file fields; image alternative text and credit are required, and published media needs rights and consent information. Do not enter personal consent records or sensitive details into public-facing fields or editorial notes.
 

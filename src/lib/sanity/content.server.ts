@@ -59,7 +59,7 @@ export const fetchHomepageFromSanity: HomepageFetcher = async (env, preview) => 
   return withTimeout(client.fetch<CmsHomepage>(HOMEPAGE_QUERY, { preview }));
 };
 
-async function hasValidPreviewSession(
+export async function hasValidPreviewSession(
   env: SanityEnv,
   cookieHeader?: string | null,
 ): Promise<boolean> {

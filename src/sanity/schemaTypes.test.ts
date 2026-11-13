@@ -102,6 +102,7 @@ describe("Sanity Studio schemas", () => {
       { templateId: "journeyChapter-1" },
       { templateId: "journeyChapter-2" },
       { templateId: "siteSettings" },
+      { templateId: "visualPage" },
       { templateId: "artisanProfile" },
     ];
     expect(
@@ -109,6 +110,11 @@ describe("Sanity Studio schemas", () => {
         creationContext: { type: "global" },
       } as const),
     ).toEqual([{ templateId: "artisanProfile" }]);
+    expect(
+      filterNewDocumentOptions(options, {
+        creationContext: { type: "structure", schemaType: "visualPage" },
+      } as const),
+    ).toEqual([]);
     expect(
       filterNewDocumentOptions(options, {
         creationContext: { type: "structure", schemaType: "journeyChapter" },

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StudioRouteImport } from './routes/studio'
+import { Route as PagesSlugRouteImport } from './routes/pages/$slug'
 import { Route as ApiPreviewDisableRouteImport } from './routes/api/preview/disable'
 import { Route as ApiPreviewEnableRouteImport } from './routes/api/preview/enable'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const StudioRoute = StudioRouteImport.update({
   id: '/studio',
   path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PagesSlugRoute = PagesSlugRouteImport.update({
+  id: '/pages/$slug',
+  path: '/pages/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPreviewDisableRoute = ApiPreviewDisableRouteImport.update({
@@ -38,12 +44,14 @@ const ApiPreviewEnableRoute = ApiPreviewEnableRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/studio': typeof StudioRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/api/preview/disable': typeof ApiPreviewDisableRoute
   '/api/preview/enable': typeof ApiPreviewEnableRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/studio': typeof StudioRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/api/preview/disable': typeof ApiPreviewDisableRoute
   '/api/preview/enable': typeof ApiPreviewEnableRoute
 }
@@ -51,18 +59,30 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/studio': typeof StudioRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/api/preview/disable': typeof ApiPreviewDisableRoute
   '/api/preview/enable': typeof ApiPreviewEnableRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/studio' | '/api/preview/disable' | '/api/preview/enable'
+  fullPaths:
+    | '/'
+    | '/studio'
+    | '/pages/$slug'
+    | '/api/preview/disable'
+    | '/api/preview/enable'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/studio' | '/api/preview/disable' | '/api/preview/enable'
+  to:
+    | '/'
+    | '/studio'
+    | '/pages/$slug'
+    | '/api/preview/disable'
+    | '/api/preview/enable'
   id:
     | '__root__'
     | '/'
     | '/studio'
+    | '/pages/$slug'
     | '/api/preview/disable'
     | '/api/preview/enable'
   fileRoutesById: FileRoutesById
@@ -70,6 +90,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   StudioRoute: typeof StudioRoute
+  PagesSlugRoute: typeof PagesSlugRoute
   ApiPreviewDisableRoute: typeof ApiPreviewDisableRoute
   ApiPreviewEnableRoute: typeof ApiPreviewEnableRoute
 }
@@ -88,6 +109,13 @@ declare module '@tanstack/react-router' {
       path: '/studio'
       fullPath: '/studio'
       preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pages/$slug': {
+      id: '/pages/$slug'
+      path: '/pages/$slug'
+      fullPath: '/pages/$slug'
+      preLoaderRoute: typeof PagesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/preview/disable': {
@@ -110,6 +138,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   StudioRoute: StudioRoute,
+  PagesSlugRoute: PagesSlugRoute,
   ApiPreviewDisableRoute: ApiPreviewDisableRoute,
   ApiPreviewEnableRoute: ApiPreviewEnableRoute,
 }

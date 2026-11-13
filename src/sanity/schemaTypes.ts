@@ -5,6 +5,7 @@ import {
   validateMediaPublication,
   isRecord,
 } from "./journey";
+import { validateVisualPageData } from "./puck/data";
 
 const imageFields = [
   defineField({
@@ -901,7 +902,7 @@ export const visualPageSchema = defineType({
   type: "document",
   groups: [
     { name: "page", title: "Page", default: true },
-    { name: "configuration", title: "Future visual layout" },
+    { name: "configuration", title: "Visual layout" },
     { name: "seo", title: "Search and sharing" },
   ],
   fields: [
@@ -917,8 +918,29 @@ export const visualPageSchema = defineType({
       title: "Page path",
       type: "slug",
       group: "page",
-      options: { source: "title" },
-      validation: (Rule) => Rule.required(),
+      options: {
+        source: "title",
+        isUnique: async (slug, context) => {
+          const id = context.document?._id?.replace(/^drafts\./, "");
+          if (!id) return true;
+          return context
+            .getClient({ apiVersion: "2025-02-19" })
+            .fetch(
+              'count(*[_type == "visualPage" && slug.current == $slug && _id != $id && _id != $draftId]) == 0',
+              { slug, id, draftId: `drafts.${id}` },
+            );
+        },
+      },
+      validation: (Rule) =>
+        Rule.required().custom((value) => {
+          if (!isRecord(value) || typeof value["current"] !== "string") {
+            return "Enter a page path.";
+          }
+          return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value["current"]) &&
+            !["api", "studio", "pages"].includes(value["current"])
+            ? true
+            : "Use a lowercase, hyphen-separated path that is not reserved.";
+        }),
     }),
     defineField({
       name: "pageConfig",
@@ -927,15 +949,22 @@ export const visualPageSchema = defineType({
       rows: 14,
       group: "configuration",
       description:
-        "Reserved for a future Puck page builder. Store valid JSON only; this does not render in the current website.",
+        "Managed by the Visual Page Editor. Use the editor to arrange approved sections; avoid editing this data directly.",
       validation: (Rule) =>
-        Rule.custom((value) => {
+        Rule.custom((value, context) => {
           if (!value) return true;
           try {
-            JSON.parse(value);
+            const result = validateVisualPageData(JSON.parse(value));
+            if (!result.success) return result.issues[0] || "Enter valid page configuration.";
+            if (
+              context.document?.["publicationStatus"] === "published" &&
+              result.data?.content.length === 0
+            ) {
+              return "Add at least one page section before publication.";
+            }
             return true;
           } catch {
-            return "Enter valid JSON configuration.";
+            return "Enter valid page configuration.";
           }
         }),
     }),

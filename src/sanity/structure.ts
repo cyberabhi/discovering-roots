@@ -40,5 +40,5 @@ export const studioStructure: StructureResolver = (S) =>
       S.documentTypeListItem("artisanProfile").title("Artisan Stories"),
       S.documentTypeListItem("shawl").title("Shawl Collection"),
       S.documentTypeListItem("documentaryMedia").title("Documentary Media"),
-      S.documentTypeListItem("visualPage").title("Visual Pages (future)"),
+      S.documentTypeListItem("visualPage").title("Visual Pages"),
     ]);
