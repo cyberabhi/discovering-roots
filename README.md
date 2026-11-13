@@ -87,23 +87,35 @@ The private editorial Studio is integrated at `/studio` and uses the existing Sa
 
 On first use, the Studio may show Sanity's **Connect this studio to your project** screen. Choose **Add development host** for local work, or **Register this studio** for the secured production editor-facing Studio, then sign in with an invited Sanity account. Add the exact local and production origins to the project's allowed CORS origins in Sanity Manage and enable credentialed requests for the Studio. In Manage → Members, assign the least-privileged role that matches each person's work (for example, Editor for trusted content editors); do not create or share a browser API token. The production Sanity project must also grant those roles access to the `production` dataset.
 
-The Studio navigation follows the editing workflow:
+The Studio opens on an **Editorial Dashboard** with the core owner workflow:
 
-- **Website Settings and Homepage** — brand, hero, navigation, preservation message, footer, contact and SEO.
+- **Homepage and Website Settings** — brand, hero, navigation, preservation message, footer, contact and SEO. These fields are kept together in the single site-settings document.
 - **Eight-Step Journey** — eight stable chapter documents in a fixed order. Step number and process zone are read-only; chapters cannot be deleted from Studio. New chapters default to draft and must be verified before appearing publicly.
 - **Artisan Stories** — profile information, related chapters, identity consent, separate quotation consent and publication status.
 - **Shawl Collection** — verified descriptions, photographs, materials and provenance.
 - **Documentary Media** — reusable image, video and audio records with credits, usage rights and consent.
+- **Publishing and Review** — a list of draft content across the journey, artisan, collection, media and visual-page documents.
 - **Visual Pages** — Sanity documents for pages built in the private Puck editor.
-- **Visual Page Editor** — a controlled drag-and-drop editor that uses approved site components and the Documentary Media library.
+- **Preview and Draft Review** — Sanity Presentation opens the website preview for authorized editorial review.
+- **Visual Page Editor** — a controlled drag-and-drop tool in Studio that uses approved site components and the Documentary Media library. It is available in the Studio tool navigation.
 
-To create a visual page, open **Visual Page Editor** in the Studio tool navigation, choose **Create page**, enter a title and unique page path, and add sections from the Storytelling, Craft and people, and Closing sections groups. Image, video, artisan, and shawl choices come from eligible Sanity content; the editor does not accept arbitrary HTML or custom components. Save a draft to persist work without making it public. Use the Studio **Website Preview** Presentation tool to inspect the draft at its `/pages/<path>` route, then choose **Publish** in the page editor when it is approved. Publishing writes the approved configuration to the published Sanity document and removes its draft in one revision-checked transaction.
+### Studio roles and permissions
+
+Studio sign-in and document permissions are provided by Sanity; this application does not create its own password system. Ask the Sanity project administrator to assign roles in Sanity Manage:
+
+- **Administrator** — project administration and content editing/publishing.
+- **Editor** — day-to-day content editing and publishing, according to dataset permissions.
+- **Viewer** — read-only access; the Visual Page Editor is not available for editing.
+
+The Visual Page Editor checks the signed-in Sanity user's built-in `administrator` or `editor` role before loading its editing interface. This is a usability guard, not a replacement for Sanity authorization: all content reads and writes still go through the signed-in Sanity client, and Sanity's project and dataset permissions are authoritative. No anonymous write endpoint or public write token is used. A role configured in code does not prove that the client project has assigned that role successfully.
+
+To create a visual page, open **Visual Page Editor** in the Studio tool navigation, choose **Create page**, enter a title and unique page path, and add sections from the Storytelling, Craft and people, and Closing sections groups. Image, video, artisan, and shawl choices come from eligible Sanity content; the editor does not accept arbitrary HTML or custom components. Save a draft to persist work without making it public. Use the Studio **Preview and Draft Review** Presentation tool to inspect the draft at its `/pages/<path>` route, then choose **Publish** in the page editor when it is approved. Publishing writes the approved configuration to the published Sanity document and removes its draft in one revision-checked transaction.
 
 Visual-page publishing uses the signed-in Sanity Studio session and the editor's Sanity dataset permissions; the website has no anonymous write endpoint and no browser write token. Draft routes are available only in an authorized preview session. Public requests load published page documents and published, consent-cleared references only. The existing homepage and its eight-step journey are unchanged by visual-page edits. Changes to Visual Page schemas or stored page configuration should be made through the Studio editor; avoid hand-editing the JSON field.
 
 To edit, select an item in the Studio navigation, edit its fields, and publish through Sanity when its validation requirements are met. Upload or replace photographs and recordings in the corresponding image/file fields; image alternative text and credit are required, and published media needs rights and consent information. Do not enter personal consent records or sensitive details into public-facing fields or editorial notes.
 
-Sanity account membership and dataset roles are managed in Sanity Manage, not in this website. Do not place write tokens or private credentials in browser environment variables. Studio project and dataset identifiers are public configuration, not secrets.
+Sanity account membership and dataset roles are managed in Sanity Manage, not in this website. See [docs/client-handover.md](./docs/client-handover.md) for the administrator checklist. Do not place write tokens or private credentials in browser environment variables. Studio project and dataset identifiers are public configuration, not secrets.
 
 ### Fallback and preview behavior
 

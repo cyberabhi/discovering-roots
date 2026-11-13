@@ -19,6 +19,7 @@ import {
 } from "./components";
 import type { ShawlView } from "@/lib/sanity/types";
 import { isRecord } from "@/sanity/journey";
+import { hasEditorialWriteAccess } from "@/sanity/access";
 
 const API_VERSION = "2025-02-19";
 const PAGE_LIST_QUERY = `*[_type == "visualPage"] | order(_updatedAt desc){
@@ -338,6 +339,7 @@ export function VisualPageTool(_props: { tool: Tool }) {
     useCdn: false,
   });
   const currentUser = useCurrentUser();
+  const canEdit = hasEditorialWriteAccess(currentUser);
   const [pages, setPages] = useState<PageListItem[]>([]);
   const [library, setLibrary] = useState<PageLibrary>();
   const [page, setPage] = useState<PageDocument>();
@@ -375,6 +377,7 @@ export function VisualPageTool(_props: { tool: Tool }) {
   }, [client]);
 
   useEffect(() => {
+    if (!canEdit) return;
     let active = true;
     void Promise.all([refreshPages(), refreshLibrary()]).catch((cause: unknown) => {
       if (!active) return;
@@ -386,7 +389,7 @@ export function VisualPageTool(_props: { tool: Tool }) {
     return () => {
       active = false;
     };
-  }, [refreshPages, refreshLibrary]);
+  }, [canEdit, refreshPages, refreshLibrary]);
 
   const puckConfig = useMemo(
     () =>
@@ -467,6 +470,10 @@ export function VisualPageTool(_props: { tool: Tool }) {
   );
 
   const startNewPage = () => {
+    if (!canEdit) {
+      setError("Your Sanity role does not allow visual page editing.");
+      return;
+    }
     const newTitle = "Untitled visual page";
     setPage({
       _id: `visualPage-${crypto.randomUUID()}`,
@@ -571,6 +578,10 @@ export function VisualPageTool(_props: { tool: Tool }) {
   };
 
   const saveDraft = async (pageData = data) => {
+    if (!canEdit) {
+      setError("Your Sanity role does not allow saving visual page drafts.");
+      return;
+    }
     if (!page) return;
     setBusy(true);
     setError(undefined);
@@ -616,6 +627,10 @@ export function VisualPageTool(_props: { tool: Tool }) {
   };
 
   const publishPage = async () => {
+    if (!canEdit) {
+      setError("Your Sanity role does not allow publishing visual pages.");
+      return;
+    }
     if (!page) return;
     setBusy(true);
     setError(undefined);
@@ -673,6 +688,19 @@ export function VisualPageTool(_props: { tool: Tool }) {
 
   if (!currentUser) {
     return <p role="status">Sign in to Sanity Studio to manage visual pages.</p>;
+  }
+
+  if (!canEdit) {
+    return (
+      <div className="m-6 max-w-2xl rounded-xl border border-border bg-paper p-6">
+        <h1 className="font-display text-2xl">Visual page editor access required</h1>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">
+          Your Sanity account is signed in, but this tool is available only to project
+          Administrators and Editors. Ask the project administrator to assign the appropriate Sanity
+          role. Sanity dataset permissions remain the authority for all reads and writes.
+        </p>
+      </div>
+    );
   }
 
   return (
