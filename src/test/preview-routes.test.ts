@@ -64,9 +64,45 @@ describe("preview API route handlers", () => {
       new Request("https://discovering-roots.example/api/preview/enable?sanity-preview-secret=bad"),
     );
 
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe("/?previewError=unavailable");
     expect(response.headers.get("set-cookie")).toBeNull();
     expect(response.headers.get("cache-control")).toBe("no-store");
+  });
+
+  it("rejects malformed preview paths before passing the secret URL to Sanity", async () => {
+    const response = await handlePreviewEnableRequest(
+      new Request(
+        "https://discovering-roots.example/api/preview/enable?sanity-preview-secret=test-marker&sanity-preview-pathname=http%3A%2F%2F%5B",
+      ),
+    );
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe("/?previewError=unavailable");
+    expect(response.headers.get("set-cookie")).toBeNull();
+    expect(validatePreviewUrl).not.toHaveBeenCalled();
+  });
+
+  it("fails closed without logging or returning validation errors", async () => {
+    validatePreviewUrl.mockRejectedValue(new Error("validation failed"));
+    const errorLog = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const response = await handlePreviewEnableRequest(
+        new Request(
+          "https://discovering-roots.example/api/preview/enable?sanity-preview-secret=test-marker",
+        ),
+      );
+
+      expect(response.status).toBe(303);
+      expect(response.headers.get("location")).toBe("/?previewError=unavailable");
+      expect(response.headers.get("set-cookie")).toBeNull();
+      expect(response.headers.get("cache-control")).toBe("no-store");
+      expect(response.headers.get("referrer-policy")).toBe("no-referrer");
+      expect(errorLog).not.toHaveBeenCalled();
+    } finally {
+      errorLog.mockRestore();
+    }
   });
 
   it("rejects external redirect targets after a valid secret", async () => {
@@ -76,11 +112,28 @@ describe("preview API route handlers", () => {
     });
 
     const response = await handlePreviewEnableRequest(
-      new Request("https://discovering-roots.example/api/preview/enable"),
+      new Request(
+        "https://discovering-roots.example/api/preview/enable?sanity-preview-secret=incoming-secret",
+      ),
     );
 
     expect(response.status).toBe(307);
     expect(response.headers.get("location")).toBe("/");
+  });
+
+  it("cleans the handshake URL when preview configuration is absent", async () => {
+    vi.stubEnv("SANITY_API_READ_TOKEN", "");
+
+    const response = await handlePreviewEnableRequest(
+      new Request(
+        "https://discovering-roots.example/api/preview/enable?sanity-preview-secret=test-marker",
+      ),
+    );
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe("/?previewError=unavailable");
+    expect(response.headers.get("set-cookie")).toBeNull();
+    expect(validatePreviewUrl).not.toHaveBeenCalled();
   });
 
   it("returns an explicit setup error when preview credentials are absent", async () => {

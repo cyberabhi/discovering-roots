@@ -36,6 +36,16 @@ To enable the Presentation tool's draft preview handshake, configure these value
 
 Do not commit secret values, set them with a `VITE_` prefix, or place them in client-side environment settings. If preview values are absent, preview activation must remain unavailable; the public site continues using published data or demo fallback.
 
+### Preview secret handling and rotation
+
+The Presentation Tool generates a short-lived `sanity-preview-secret` for its one-time activation request. The browser sends it to `/api/preview/enable` as a query parameter because that is Sanity's preview URL handshake. After successful validation, the server redirects to the validated same-origin destination with the preview-secret parameters removed. If activation fails, the server redirects to the published homepage with a non-sensitive notice and no preview cookie, removing the handshake value from the address bar. The secret is not an application environment variable. Do not copy or share the initial activation URL, and configure any deployment request logging or monitoring to redact query strings for this endpoint. The route handler does not directly log the request URL or validation errors. Sanity's one-time handshake secret expires after one hour.
+
+Rotate the application's secrets through the deployment and Sanity consoles; never put their values in Git, tickets, or chat:
+
+1. **`SANITY_PREVIEW_SECRET` (application cookie-signing key):** generate a new high-entropy value using an approved secret manager, replace it in the server-only Vercel Preview and Production environment settings, and redeploy. This invalidates existing signed preview cookies. It does not rotate Sanity-generated URL secrets.
+2. **`SANITY_API_READ_TOKEN` (Sanity viewer token):** create a replacement token with only the required dataset read access, update the server-only Vercel settings, verify draft preview with an authorized editor, then revoke the old token in Sanity.
+3. **Sanity-generated preview URLs:** these are separate from both environment variables. A one-time Presentation handshake secret expires after one hour. To revoke a longer-lived shared preview link, disable preview sharing in Sanity Presentation; re-enable it only when a new link is required. Do not expose the secret document through a debug plugin or edit Sanity secret documents manually.
+
 ## Client verification checklist
 
 After roles, dataset permissions, CORS, and server-side environment are configured, an authorized client editor should verify:

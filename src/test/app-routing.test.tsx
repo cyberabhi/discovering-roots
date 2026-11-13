@@ -14,4 +14,16 @@ describe("App routing", () => {
 
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
+
+  it("serves the Studio entry point and nested Sanity routes", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+
+    expect(router.matchRoutes("/studio").map(({ routeId }) => routeId)).toContain("/studio/");
+    expect(router.matchRoutes("/studio/structure").map(({ routeId }) => routeId)).toContain(
+      "/studio/$",
+    );
+    expect(
+      router.matchRoutes("/studio/structure/panes/tool").map(({ routeId }) => routeId),
+    ).toContain("/studio/$");
+  });
 });

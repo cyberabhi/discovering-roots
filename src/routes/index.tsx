@@ -12,6 +12,8 @@ import {
 } from "@/components/site/Sections";
 
 export const Route = createFileRoute("/")({
+  validateSearch: (search: Record<string, unknown>) =>
+    search["previewError"] === "unavailable" ? { previewError: "unavailable" } : {},
   loader: ({ context }) => context.queryClient.ensureQueryData(siteContentQuery),
   head: () => ({
     meta: [
@@ -35,9 +37,21 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const content = Route.useLoaderData();
+  const { previewError } = Route.useSearch();
 
   return (
     <>
+      {previewError && (
+        <div
+          role="alert"
+          className="fixed inset-x-0 top-16 z-[60] flex items-center justify-center gap-3 bg-slate px-4 py-3 text-center text-sm text-paper"
+        >
+          <span>Draft preview could not be activated. The published site is shown instead.</span>
+          <a href="/" className="font-semibold underline underline-offset-2">
+            Continue without preview
+          </a>
+        </div>
+      )}
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:bg-paper focus:p-3"

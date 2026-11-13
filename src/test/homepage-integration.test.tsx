@@ -60,11 +60,11 @@ function completeChapters(): CmsChapter[] {
   }));
 }
 
-async function renderHomepage(content: SiteContent) {
+async function renderHomepage(content: SiteContent, search: { previewError?: "unavailable" } = {}) {
   const queryClient = new QueryClient();
   queryClient.setQueryData(["site-content"], content);
   const router = createRouter({ routeTree, context: { queryClient } });
-  await router.navigate({ to: "/" });
+  await router.navigate({ to: "/", search });
   return render(<RouterProvider router={router} />);
 }
 
@@ -96,6 +96,20 @@ describe("homepage content integration", () => {
     expect(screen.getByRole("link", { name: "Return to published site" })).toHaveAttribute(
       "href",
       "/api/preview/disable",
+    );
+  });
+
+  it("explains when a failed draft preview has returned to published content", async () => {
+    await renderHomepage(createDemoContent("Preview activation unavailable"), {
+      previewError: "unavailable",
+    });
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Draft preview could not be activated. The published site is shown instead.",
+    );
+    expect(screen.getByRole("link", { name: "Continue without preview" })).toHaveAttribute(
+      "href",
+      "/",
     );
   });
 

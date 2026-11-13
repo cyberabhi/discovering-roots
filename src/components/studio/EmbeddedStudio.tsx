@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 
 const SanityStudio = lazy(async () => {
   const [{ Studio }, { studioConfig }] = await Promise.all([
@@ -9,26 +9,7 @@ const SanityStudio = lazy(async () => {
   return { default: () => <Studio config={studioConfig} /> };
 });
 
-export const Route = createFileRoute("/studio")({
-  head: () => ({
-    meta: [
-      { title: "Editorial Studio — Discovering Roots" },
-      {
-        name: "description",
-        content:
-          "Private editorial studio for Discovering Roots editors. Sign-in with an invited Sanity account is required.",
-      },
-      { name: "robots", content: "noindex, nofollow" },
-      { property: "og:title", content: "Editorial Studio — Discovering Roots" },
-      { property: "og:description", content: "Private editorial studio for invited editors." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
-  component: StudioPage,
-});
-
-function StudioPage() {
+export function EmbeddedStudio() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => setIsMounted(true), []);

@@ -1,0 +1,111 @@
+{
+  "generatedOnPlatform": "win32",
+  "projectType": "webapp",
+  "setup": [],
+  "assertions": [
+    {
+      "name": "tsc-no-emit",
+      "kind": "process",
+      "command": "npx",
+      "args": ["tsc", "--noEmit"],
+      "verificationMethod": "exit-code",
+      "expected": "0",
+      "timeoutSeconds": 180
+    },
+    {
+      "name": "tests-pass",
+      "kind": "process",
+      "command": "npm",
+      "args": ["test"],
+      "verificationMethod": "test-results",
+      "expected": "0",
+      "timeoutSeconds": 300
+    },
+    {
+      "name": "preview-route-eslint",
+      "kind": "process",
+      "command": "npx",
+      "args": [
+        "eslint",
+        "src/routes/api/preview/enable.ts",
+        "src/routes/index.tsx",
+        "src/test/preview-routes.test.ts",
+        "src/test/homepage-integration.test.tsx",
+        "--rule",
+        "prettier/prettier: off"
+      ],
+      "verificationMethod": "exit-code",
+      "expected": "0",
+      "timeoutSeconds": 120
+    },
+    {
+      "name": "preview-route-prettier",
+      "kind": "process",
+      "command": "npx",
+      "args": [
+        "prettier",
+        "--check",
+        "--end-of-line",
+        "crlf",
+        "src/routes/api/preview/enable.ts",
+        "src/routes/index.tsx",
+        "src/test/preview-routes.test.ts",
+        "src/test/homepage-integration.test.tsx"
+      ],
+      "verificationMethod": "exit-code",
+      "expected": "0",
+      "timeoutSeconds": 120
+    },
+    {
+      "name": "production-build",
+      "kind": "process",
+      "command": "npm",
+      "args": ["run", "build"],
+      "verificationMethod": "exit-code",
+      "expected": "0",
+      "timeoutSeconds": 600
+    },
+    {
+      "name": "homepage-serves",
+      "kind": "http-probe",
+      "startCommand": "npm",
+      "startArgs": ["run", "dev", "--", "--host", "127.0.0.1", "--port", "8080"],
+      "url": "http://127.0.0.1:8080/",
+      "verificationMethod": "http-status",
+      "expected": "200",
+      "timeoutSeconds": 120
+    },
+    {
+      "name": "preview-fails-closed-without-configuration",
+      "kind": "http-probe",
+      "startCommand": "npm",
+      "startArgs": ["run", "dev", "--", "--host", "127.0.0.1", "--port", "8080"],
+      "env": {
+        "SANITY_PROJECT_ID": "",
+        "SANITY_DATASET": "",
+        "SANITY_API_READ_TOKEN": "",
+        "SANITY_PREVIEW_SECRET": ""
+      },
+      "url": "http://127.0.0.1:8080/api/preview/enable",
+      "verificationMethod": "http-status",
+      "expected": "501",
+      "timeoutSeconds": 120
+    },
+    {
+      "name": "failed-preview-shows-published-site-notice",
+      "kind": "http-probe",
+      "startCommand": "npm",
+      "startArgs": ["run", "dev", "--", "--host", "127.0.0.1", "--port", "8080"],
+      "env": {
+        "SANITY_PROJECT_ID": "",
+        "SANITY_DATASET": "",
+        "SANITY_API_READ_TOKEN": "",
+        "SANITY_PREVIEW_SECRET": ""
+      },
+      "url": "http://127.0.0.1:8080/api/preview/enable?sanity-preview-secret=validation-marker",
+      "verificationMethod": "output-contains",
+      "expected": "Draft preview could not be activated.",
+      "timeoutSeconds": 120
+    }
+  ]
+}
