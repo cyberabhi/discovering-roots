@@ -7,7 +7,7 @@ export function imageUrl(env: SanityEnv, img: CmsImage | null | undefined, width
   if (!img?.asset?._ref) return undefined;
   try {
     return createImageUrlBuilder({ projectId: env.projectId, dataset: env.dataset })
-      .image(img)
+      .image({ asset: { _ref: img.asset._ref } })
       .width(width)
       .fit("max")
       .auto("format")

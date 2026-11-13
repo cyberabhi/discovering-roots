@@ -20,14 +20,14 @@ describe("Sanity chapter mapping", () => {
     expect(mapChapters(completeChapters().slice(0, 7), urlFor)).toBeNull();
 
     const duplicate = completeChapters();
-    duplicate[7] = { ...duplicate[7], stepNumber: 7 };
+    duplicate[7] = { ...duplicate[7]!, stepNumber: 7 };
     expect(mapChapters(duplicate, urlFor)).toBeNull();
   });
 
   it("filters artisan identity and quotes unless their consent is granted", () => {
     const raw = completeChapters();
     raw[0] = {
-      ...raw[0],
+      ...raw[0]!,
       artisans: [
         {
           _id: "withdrawn",
