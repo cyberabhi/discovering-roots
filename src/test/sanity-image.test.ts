@@ -24,3 +24,4 @@ describe("Sanity image normalization", () => {
     expect(imageUrl(env, { asset: null, url: null })).toBeUndefined();
   });
 });
+

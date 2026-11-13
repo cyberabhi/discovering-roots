@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState } from "react";
-import { studioConfig } from "@/sanity/config";
 
 const SanityStudio = lazy(async () => {
-  const { Studio } = await import("sanity");
-  return { default: Studio };
+  const [{ Studio }, { studioConfig }] = await Promise.all([
+    import("sanity"),
+    import("@/sanity/config"),
+  ]);
+  return { default: () => <Studio config={studioConfig} /> };
 });
 
 export const Route = createFileRoute("/studio")({
@@ -41,7 +43,7 @@ function StudioPage() {
             </p>
           }
         >
-          <SanityStudio config={studioConfig} />
+          <SanityStudio />
         </Suspense>
       ) : (
         <p className="p-6 text-sm" role="status">
