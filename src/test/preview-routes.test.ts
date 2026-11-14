@@ -43,9 +43,10 @@ describe("preview API route handlers", () => {
     const token = cookie.match(new RegExp(`${PREVIEW_COOKIE}=([^;]+)`))?.[1];
 
     expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toBe("/?section=journey");
+    expect(response.headers.get("location")).toBe("/?section=journey&preview=1");
     expect(response.headers.get("cache-control")).toBe("no-store");
     expect(cookie).toContain("HttpOnly");
+    expect(cookie).toContain("Path=/");
     expect(cookie).toContain("Secure");
     expect(cookie).toContain("SameSite=None");
     expect(cookie).toContain("Partitioned");
@@ -118,7 +119,7 @@ describe("preview API route handlers", () => {
     );
 
     expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toBe("/");
+    expect(response.headers.get("location")).toBe("/?preview=1");
   });
 
   it("cleans the handshake URL when preview configuration is absent", async () => {

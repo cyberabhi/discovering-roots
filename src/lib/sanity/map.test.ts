@@ -13,6 +13,8 @@ function completeChapters(): CmsChapter[] {
     stepNumber: index + 1,
     phase: index < 5 ? "preLoom" : "onLoom",
     intro: `Story ${index + 1}`,
+    artisanReviewStatus: "verified",
+    publicationStatus: "published",
   }));
 }
 
@@ -77,6 +79,38 @@ describe("Sanity chapter mapping", () => {
 
     expect(mapped?.[0]?.story).toBeTruthy();
     expect(mapped?.[0]?.caption).toBeTruthy();
+  });
+
+  it("uses the draft short label and marks missing editorial copy as missing", () => {
+    const raw = completeChapters();
+    raw[0] = {
+      ...raw[0]!,
+      shortLabel: "A visibly edited label",
+      eyebrow: "Old eyebrow",
+      intro: null,
+      documentaryVideo: null,
+      heroImage: null,
+    };
+
+    const mapped = mapChapters(raw, urlFor, true);
+
+    expect(mapped?.[0]?.kicker).toBe("A visibly edited label");
+    expect(mapped?.[0]?.story).toBe("Story not provided in this draft.");
+    expect(mapped?.[0]?.caption).toBe("Documentary caption not provided in this draft.");
+  });
+
+  it("keeps partial preview chapters ordered, but rejects unpublished or unverified public chapters", () => {
+    const raw = completeChapters().filter((chapter) => chapter.stepNumber !== 4);
+    const unpublished = [...raw];
+    unpublished[0] = { ...unpublished[0]!, publicationStatus: "draft" };
+    const unverified = [...raw];
+    unverified[0] = { ...unverified[0]!, artisanReviewStatus: "needsReview" };
+
+    expect(mapChapters(raw, urlFor, true)?.map(({ number }) => number)).toEqual([
+      1, 2, 3, 5, 6, 7, 8,
+    ]);
+    expect(mapChapters(unpublished, urlFor)).toBeNull();
+    expect(mapChapters(unverified, urlFor)).toBeNull();
   });
 
   it("rejects unsafe external media URLs", () => {

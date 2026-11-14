@@ -58,3 +58,9 @@ After roles, dataset permissions, CORS, and server-side environment are configur
 6. Confirm the public site does not show unpublished drafts.
 
 These are client-side integration checks. They have not been completed by the developer because authenticated access to the client Sanity project is unavailable.
+
+## Website preview versus click-to-edit
+
+The Presentation tool's draft preview handshake and the website's server-side draft fetch are implemented independently of Visual Editing overlays. The current frontend does not load `@sanity/visual-editing`, request stega/content source maps, or resolve homepage chapters/settings to editor locations. Editors can review saved draft content in the website preview, but click-to-edit overlays and live overlay refresh are not currently available. A browser WebSocket or QUIC error should be diagnosed separately from the preview data path; confirm the draft banner and displayed draft fields before concluding that content fetching failed.
+
+Sanity's documented React Router integration is not a drop-in TanStack Start integration. Adding overlays requires a compatible Visual Editing package/version, server/client source-map and stega handling, Presentation communication/history and refresh integration, and homepage document-location resolvers. Do not claim click-to-edit support until these are implemented and tested against the deployed Sanity Studio and website origins.

@@ -11,10 +11,24 @@ import {
   SiteFooter,
 } from "@/components/site/Sections";
 
+interface IndexSearch {
+  preview?: 1;
+  previewError?: "unavailable";
+}
+
 export const Route = createFileRoute("/")({
-  validateSearch: (search: Record<string, unknown>) =>
-    search["previewError"] === "unavailable" ? { previewError: "unavailable" } : {},
-  loader: ({ context }) => context.queryClient.ensureQueryData(siteContentQuery),
+  validateSearch: (search: Record<string, unknown>): IndexSearch => {
+    const preview = search["preview"] === 1 || search["preview"] === "1";
+    const validatedSearch: IndexSearch = {
+      ...(preview ? { preview: 1 } : {}),
+      ...(search["previewError"] === "unavailable" ? { previewError: "unavailable" } : {}),
+    };
+
+    return validatedSearch;
+  },
+  loaderDeps: ({ search }) => ({ preview: search.preview === 1 }),
+  loader: ({ context, deps }) =>
+    context.queryClient.fetchQuery(siteContentQuery(deps.preview ? "preview" : "published")),
   head: () => ({
     meta: [
       { title: "Discovering Roots — The Making of Handmade Pashmina" },
@@ -66,8 +80,27 @@ function Index() {
       <main id="main">
         <HeroSection hero={content.settings.hero} shawl={content.shawl} />
         <OriginSection />
-        <EmbroideredJourney chapters={content.chapters} />
-        <ArtisansSection chapters={content.chapters} />
+        {content.chapters.length > 0 ? (
+          <EmbroideredJourney
+            chapters={content.chapters}
+            previewNotice={content.preview ? content.notice : null}
+          />
+        ) : (
+          content.preview && (
+            <section id="craft" className="border-t border-border px-5 py-20 md:px-10">
+              <p className="eyebrow !text-sky">Editorial preview</p>
+              {content.notice && (
+                <p role="status" className="mt-4 max-w-3xl border-l-2 border-sky pl-4 text-sm">
+                  {content.notice}
+                </p>
+              )}
+              <h2 className="mt-4 max-w-3xl text-4xl leading-tight md:text-6xl">
+                No reviewable chapter drafts are available.
+              </h2>
+            </section>
+          )
+        )}
+        <ArtisansSection chapters={content.chapters} previewMode={content.preview} />
         <ShawlDetailGallery shawl={content.shawl} />
         <PreservationSection cta={content.settings.cta} />
       </main>

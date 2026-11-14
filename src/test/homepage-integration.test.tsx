@@ -1,13 +1,36 @@
 import { QueryClient } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { chapters as demoChapters } from "@/data/chapters";
 import { demoSettings } from "@/data/demo-content";
 import { MediaSlot } from "@/components/site/MediaSlot";
 import { loadSiteContent, createDemoContent } from "@/lib/sanity/content.server";
+import { signPreviewToken } from "@/lib/sanity/preview-token";
 import type { CmsChapter, SiteContent } from "@/lib/sanity/types";
 import { routeTree } from "@/routeTree.gen";
+
+const { serializedContent, siteContentQueryCalls } = vi.hoisted(() => ({
+  serializedContent: { value: "" },
+  siteContentQueryCalls: [] as Array<{
+    scope: "published" | "preview";
+  }>,
+}));
+
+vi.mock("@/lib/content.functions", async () => {
+  const { queryOptions } = await import("@tanstack/react-query");
+  return {
+    getSiteContent: vi.fn(async () => serializedContent.value),
+    siteContentQuery: (scope: "published" | "preview" = "published") => {
+      siteContentQueryCalls.push({ scope });
+      return queryOptions({
+        queryKey: ["site-content", scope],
+        queryFn: async () => JSON.parse(serializedContent.value) as SiteContent,
+        staleTime: 0,
+      });
+    },
+  };
+});
 
 const configuredEnv = {
   configured: true,
@@ -57,14 +80,23 @@ function completeChapters(): CmsChapter[] {
     stepNumber: index + 1,
     phase: index < 5 ? "preLoom" : "onLoom",
     intro: `CMS story ${index + 1}`,
+    artisanReviewStatus: "verified",
+    publicationStatus: "published",
   }));
 }
 
-async function renderHomepage(content: SiteContent, search: { previewError?: "unavailable" } = {}) {
+async function renderHomepage(
+  content: SiteContent,
+  search: { preview?: 1; previewError?: "unavailable" } = {},
+) {
+  serializedContent.value = JSON.stringify(content);
+  siteContentQueryCalls.length = 0;
   const queryClient = new QueryClient();
-  queryClient.setQueryData(["site-content"], content);
   const router = createRouter({ routeTree, context: { queryClient } });
-  await router.navigate({ to: "/", search });
+  await router.navigate({
+    to: "/",
+    search: { ...(content.preview ? { preview: 1 as const } : {}), ...search },
+  });
   return render(<RouterProvider router={router} />);
 }
 
@@ -73,6 +105,7 @@ describe("homepage content integration", () => {
     const content = createDemoContent("Demo content");
     await renderHomepage(content);
 
+    expect(siteContentQueryCalls).toContainEqual({ scope: "published" });
     expect(
       screen.getByRole("heading", { name: /A thread that carries generations/ }),
     ).toBeVisible();
@@ -92,6 +125,7 @@ describe("homepage content integration", () => {
   it("shows a clear exit action when the homepage is loaded in draft preview", async () => {
     await renderHomepage(createDemoContent("Draft preview fallback", true));
 
+    expect(siteContentQueryCalls).toContainEqual({ scope: "preview" });
     expect(screen.getByRole("status")).toHaveTextContent("Draft preview");
     expect(screen.getByRole("link", { name: "Return to published site" })).toHaveAttribute(
       "href",
@@ -226,6 +260,46 @@ describe("homepage content integration", () => {
     expect(screen.getAllByRole("article")).toHaveLength(8);
     expect(screen.getByText(demoSettings.hero.intro)).toBeVisible();
     expect(screen.getAllByText("Replace · Documentary image")).toHaveLength(5);
+  });
+
+  it("renders partial draft chapters with their true numbers and missing-copy labels", async () => {
+    const previewSecret = "server-only-secret";
+    const cookie = await signPreviewToken(previewSecret, Date.now() + 60_000);
+    const draftChapters = completeChapters().filter((chapter) => chapter.stepNumber !== 3);
+    draftChapters[0] = { ...draftChapters[0]!, shortLabel: "Edited preview label", intro: null };
+    const content = await loadSiteContent({
+      env: { ...configuredEnv, readToken: "server-only-token", previewSecret },
+      cookieHeader: `dr_preview=${cookie}`,
+      fetchHomepage: async () => ({ chapters: draftChapters, settings: null, shawl: null }),
+    });
+
+    await renderHomepage(content);
+
+    expect(content.preview).toBe(true);
+    expect(screen.getAllByRole("article")).toHaveLength(7);
+    expect(screen.getByText(/Edited preview label/)).toBeVisible();
+    expect(screen.getByText("Story not provided in this draft.")).toBeVisible();
+    expect(screen.getByText(/Missing or incomplete chapter numbers: 3/)).toBeVisible();
+    expect(screen.queryByText(demoChapters[0]!.story)).not.toBeInTheDocument();
+    expect(
+      screen.getByText("No consented artisan profiles are included in these drafts."),
+    ).toBeVisible();
+    expect(screen.queryByText("Herder — name to be confirmed")).not.toBeInTheDocument();
+  });
+
+  it("shows an explicit empty preview state instead of the demo journey when no drafts are reviewable", async () => {
+    const unavailable = {
+      ...createDemoContent("Draft preview unavailable", true),
+      chapters: [],
+    };
+
+    await renderHomepage(unavailable);
+
+    expect(
+      screen.getByRole("heading", { name: "No reviewable chapter drafts are available." }),
+    ).toBeVisible();
+    expect(screen.queryAllByRole("article")).toHaveLength(0);
+    expect(screen.getByRole("link", { name: "Return to published site" })).toBeVisible();
   });
 
   it("keeps the existing chapter waypoints interactive", async () => {

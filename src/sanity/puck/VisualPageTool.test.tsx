@@ -52,5 +52,8 @@ describe("Visual Page Editor role access", () => {
     expect(await screen.findByRole("button", { name: "Create page" })).toBeVisible();
     expect(mocks.fetch).toHaveBeenCalled();
     expect(mocks.getSiteContent).toHaveBeenCalledOnce();
+    expect(mocks.getSiteContent).toHaveBeenCalledWith({
+      data: { scope: "published" },
+    });
   });
 });

@@ -91,6 +91,8 @@ const isFileVideo = (url: string) => /\.(mp4|webm|mov|m4v)(\?|$)/i.test(url);
 export function mapChapter(c: CmsChapter, urlFor: UrlFor, preview = false): Chapter | null {
   const n = c.stepNumber;
   if (!n || n < 1 || n > 8 || !s(c.title)) return null;
+  if (!preview && (c.publicationStatus !== "published" || c.artisanReviewStatus !== "verified"))
+    return null;
   const fallback = demoChapters[n - 1]!;
   const hero = mapImage(c.heroImage, urlFor, `${c.title} — documentary image`);
   const video = c.documentaryVideo;
@@ -105,9 +107,13 @@ export function mapChapter(c: CmsChapter, urlFor: UrlFor, preview = false): Chap
         poster: hero?.src,
       }
     : {
-        kind: hero ? "image" : fallback.media.kind,
+        kind: hero || preview ? "image" : fallback.media.kind,
         src: hero?.src,
-        alt: hero?.alt ?? fallback.media.alt,
+        alt:
+          hero?.alt ??
+          (preview
+            ? `No documentary image provided in this draft for ${c.title}`
+            : fallback.media.alt),
         credit: hero?.credit,
       };
   const portrait = (c.artisans ?? [])
@@ -119,10 +125,16 @@ export function mapChapter(c: CmsChapter, urlFor: UrlFor, preview = false): Chap
     number: n,
     zone: c.phase === "onLoom" ? "at" : c.phase === "preLoom" ? "before" : n <= 5 ? "before" : "at",
     title: c.title!.trim(),
-    kicker: s(c.eyebrow) ?? s(c.shortLabel) ?? fallback.kicker,
-    story: s(c.intro) ?? fallback.story,
+    kicker:
+      s(c.shortLabel) ??
+      s(c.eyebrow) ??
+      (preview ? "Label not provided in this draft." : fallback.kicker),
+    story: s(c.intro) ?? (preview ? "Story not provided in this draft." : fallback.story),
     body: c.body && c.body.length ? c.body : undefined,
-    caption: s(video?.caption) ?? hero?.caption ?? fallback.caption,
+    caption:
+      s(video?.caption) ??
+      hero?.caption ??
+      (preview ? "Documentary caption not provided in this draft." : fallback.caption),
     media,
     portrait,
     audio: audioUrl
@@ -134,7 +146,7 @@ export function mapChapter(c: CmsChapter, urlFor: UrlFor, preview = false): Chap
   };
 }
 
-/** Returns eight ordered chapters, or null if the CMS doesn't hold a complete set. */
+/** Public content requires eight verified steps; editorial preview can inspect a partial set. */
 export function mapChapters(
   raw: CmsChapter[] | null | undefined,
   urlFor: UrlFor,
@@ -144,8 +156,12 @@ export function mapChapters(
     .map((c) => mapChapter(c, urlFor, preview))
     .filter((c): c is Chapter => c !== null);
   const sorted = [...mapped].sort((a, b) => a.number - b.number);
-  const complete = sorted.length === 8 && sorted.every((c, i) => c.number === i + 1);
-  return complete ? sorted : null;
+  const unique = sorted.filter(
+    (chapter, index) => index === 0 || sorted[index - 1]?.number !== chapter.number,
+  );
+  if (preview) return unique;
+  const complete = unique.length === 8 && unique.every((c, i) => c.number === i + 1);
+  return complete ? unique : null;
 }
 
 export function mapSettings(raw: CmsSettings | null | undefined, urlFor: UrlFor): SiteSettingsView {

@@ -24,13 +24,15 @@ export function ShawlCanvas({ chapters, active, onSelect }: Props) {
     if (!p) return;
     const L = p.getTotalLength();
     setTotal(L);
-    setPoints(chapters.map((_, i) => p.getPointAtLength((L * i) / (chapters.length - 1))));
+    setPoints(
+      chapters.map((_, i) => p.getPointAtLength((L * i) / Math.max(chapters.length - 1, 1))),
+    );
   }, [chapters]);
 
   useEffect(() => {
     const p = pathRef.current;
     if (!p || !total) return;
-    const target = (total * active) / (chapters.length - 1);
+    const target = (total * active) / Math.max(chapters.length - 1, 1);
     const from = lenRef.current;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const dur = reduce ? 0 : 900;
@@ -69,7 +71,7 @@ export function ShawlCanvas({ chapters, active, onSelect }: Props) {
           className="absolute inset-0 h-full w-full"
           preserveAspectRatio="xMidYMid meet"
           role="group"
-          aria-label="Embroidered journey map with eight chapters"
+          aria-label={`Embroidered journey map, ${chapters.length} of 8 chapters available`}
         >
           <path
             d={ROUTE}

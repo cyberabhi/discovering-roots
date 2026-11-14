@@ -74,6 +74,7 @@ export async function handlePreviewEnableRequest(request: Request): Promise<Resp
     redirectUrl.origin === requestUrl.origin
       ? withoutSecretSearchParams(redirectUrl)
       : new URL("/", requestUrl);
+  safeRedirect.searchParams.set("preview", "1");
 
   return new Response(null, {
     status: 307,

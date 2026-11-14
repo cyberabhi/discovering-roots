@@ -17,6 +17,7 @@ export type HomepageFetcher = (env: SanityEnv, preview: boolean) => Promise<CmsH
 
 export interface LoadSiteContentOptions {
   cookieHeader?: string | null;
+  allowPreview?: boolean;
   env?: SanityEnv;
   fetchHomepage?: HomepageFetcher;
 }
@@ -35,6 +36,10 @@ export function createDemoContent(notice: string, preview = false): SiteContent 
     settings: demoSettings,
     shawl: null,
   };
+}
+
+function createUnavailablePreview(notice: string): SiteContent {
+  return { ...createDemoContent(notice, true), chapters: [] };
 }
 
 async function withTimeout<T>(operation: Promise<T>, timeoutMs = CMS_FETCH_TIMEOUT_MS): Promise<T> {
@@ -64,11 +69,10 @@ export async function hasValidPreviewSession(
   cookieHeader?: string | null,
 ): Promise<boolean> {
   if (!env.readToken || !env.previewSecret) return false;
+  const token = readCookie(cookieHeader ?? null, PREVIEW_COOKIE);
+  if (!token) return false;
   try {
-    return await verifyPreviewToken(
-      env.previewSecret,
-      readCookie(cookieHeader ?? null, PREVIEW_COOKIE),
-    );
+    return await verifyPreviewToken(env.previewSecret, token);
   } catch {
     return false;
   }
@@ -83,7 +87,10 @@ export async function loadSiteContent(options: LoadSiteContentOptions = {}): Pro
   const env = options.env ?? readSanityEnv();
   if (!env.configured) return createDemoContent(setupNotice(env));
 
-  const preview = await hasValidPreviewSession(env, options.cookieHeader);
+  const preview =
+    options.allowPreview === false
+      ? false
+      : await hasValidPreviewSession(env, options.cookieHeader);
   const fetchHomepage = options.fetchHomepage ?? fetchHomepageFromSanity;
 
   try {
@@ -92,11 +99,34 @@ export async function loadSiteContent(options: LoadSiteContentOptions = {}): Pro
       imageUrl(env, img, width);
     const chapters = mapChapters(raw.chapters, urlFor, preview);
 
+    if (preview && chapters) {
+      const available = new Set(chapters.map((chapter) => chapter.number));
+      const missing = Array.from({ length: 8 }, (_, index) => index + 1).filter(
+        (number) => !available.has(number),
+      );
+      const notices = [];
+      if (missing.length) {
+        notices.push(
+          `Draft preview: ${chapters.length} of 8 chapters are available. Missing or incomplete chapter numbers: ${missing.join(", ")}.`,
+        );
+      }
+      if (!raw.settings) {
+        notices.push("Website settings are missing; local demo settings fill the page framing.");
+      }
+      return {
+        source: "sanity",
+        preview: true,
+        notice: notices.length ? notices.join(" ") : null,
+        chapters,
+        settings: mapSettings(raw.settings, urlFor),
+        shawl: mapShawl(raw.shawl, urlFor),
+      };
+    }
+
     if (!chapters) {
       const found = raw.chapters?.length ?? 0;
       return createDemoContent(
-        `Showing demo content — the CMS has ${found} of 8 ${preview ? "" : "published "}journey chapters (steps 1–8 are all required).`,
-        preview,
+        `Showing demo content — the CMS returned ${found} chapter records, but eight unique, verified published journey chapters are required.`,
       );
     }
 
@@ -111,9 +141,12 @@ export async function loadSiteContent(options: LoadSiteContentOptions = {}): Pro
   } catch (error) {
     // Do not surface backend details or environment values to visitors.
     console.error("[sanity] content fetch failed", error);
-    return createDemoContent(
-      "Demo content — the CMS could not be reached. Check the server-side Sanity configuration.",
-      preview,
-    );
+    const notice =
+      "Draft preview is unavailable because the CMS could not be reached. No draft chapters are shown.";
+    return preview
+      ? createUnavailablePreview(notice)
+      : createDemoContent(
+          "Demo content — the CMS could not be reached. Check the server-side Sanity configuration.",
+        );
   }
 }

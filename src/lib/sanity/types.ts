@@ -47,6 +47,7 @@ export interface CmsChapter {
   toolsAndMaterials?: string[] | null;
   locationLabel?: string | null;
   artisanReviewStatus?: "needsReview" | "verified" | null;
+  publicationStatus?: "draft" | "published" | "withdrawn" | null;
   artisans?: (CmsArtisan | null)[] | null;
 }
 

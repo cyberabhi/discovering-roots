@@ -370,7 +370,7 @@ export function VisualPageTool(_props: { tool: Tool }) {
       client.fetch<MediaRow[]>(MEDIA_QUERY),
       client.fetch<ArtisanRow[]>(ARTISANS_QUERY),
       client.fetch<ShawlRow[]>(SHAWLS_QUERY),
-      getSiteContent(),
+      getSiteContent({ data: { scope: "published" } }),
     ]);
     const content = JSON.parse(serializedContent) as SiteContent;
     setLibrary(buildLibrary(media, artisans, shawls, content.chapters));

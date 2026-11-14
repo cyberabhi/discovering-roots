@@ -26,7 +26,8 @@ export function SiteHeader({
     <>
       {previewMode && (
         <div
-          role="status"
+          role="group"
+          aria-label="Draft preview controls"
           className="fixed inset-x-0 top-0 z-[60] flex h-10 items-center justify-center gap-3 whitespace-nowrap bg-slate px-4 text-center text-xs text-paper"
         >
           <span>Draft preview</span>
