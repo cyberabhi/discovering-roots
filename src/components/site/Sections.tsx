@@ -28,10 +28,18 @@ export function OriginSection() {
   );
 }
 
-export function ArtisansSection({ chapters: contentChapters }: { chapters: Chapter[] }) {
+export function ArtisansSection({
+  chapters: contentChapters,
+  previewMode = false,
+}: {
+  chapters: Chapter[];
+  previewMode?: boolean;
+}) {
   const people = contentChapters.some((chapter) => chapter.portrait)
     ? contentChapters.filter((chapter) => chapter.portrait)
-    : chapters.filter((chapter) => chapter.portrait);
+    : previewMode
+      ? []
+      : chapters.filter((chapter) => chapter.portrait);
   return (
     <section id="artisans" aria-labelledby="artisans-title" className="border-t border-border">
       <div className="mx-auto max-w-[1440px] px-5 py-20 md:px-10 md:py-28">
@@ -42,6 +50,11 @@ export function ArtisansSection({ chapters: contentChapters }: { chapters: Chapt
         <p className="mt-5 max-w-xl text-muted-foreground">
           Names, portraits and stories appear only with each person's informed consent.
         </p>
+        {previewMode && people.length === 0 && (
+          <p role="status" className="mt-5 max-w-xl text-sm text-muted-foreground">
+            No consented artisan profiles are included in these drafts.
+          </p>
+        )}
         <ul className="mt-14 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
           {people.map((c) => (
             <li key={c.id}>

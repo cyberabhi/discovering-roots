@@ -8,6 +8,8 @@ import {
   validateMediaPublication,
 } from "./journey";
 import { chapterInitialValueTemplates, filterNewDocumentOptions } from "./config";
+import { hasEditorialWriteAccess } from "./access";
+import { PUBLISHING_QUEUE_FILTER, PUBLISHING_QUEUE_TYPES } from "./structure";
 import {
   artisanProfileSchema,
   documentaryMediaSchema,
@@ -120,6 +122,33 @@ describe("Sanity Studio schemas", () => {
         creationContext: { type: "structure", schemaType: "journeyChapter" },
       } as const),
     ).toEqual([]);
+  });
+
+  it("limits the visual page editing interface to Sanity editors and administrators", () => {
+    const userWith = (...names: string[]) => ({
+      roles: names.map((name) => ({ name, title: name })),
+    });
+
+    expect(hasEditorialWriteAccess(null)).toBe(false);
+    expect(hasEditorialWriteAccess(userWith("viewer"))).toBe(false);
+    expect(hasEditorialWriteAccess(userWith("contributor"))).toBe(false);
+    expect(hasEditorialWriteAccess(userWith("editor"))).toBe(true);
+    expect(hasEditorialWriteAccess(userWith("administrator"))).toBe(true);
+    expect(hasEditorialWriteAccess(userWith("viewer", "editor"))).toBe(true);
+  });
+
+  it("includes each publication-status document in the editorial review queue", () => {
+    expect(PUBLISHING_QUEUE_TYPES).toEqual([
+      "journeyChapter",
+      "artisanProfile",
+      "shawl",
+      "documentaryMedia",
+      "visualPage",
+    ]);
+    expect(PUBLISHING_QUEUE_FILTER).toContain('publicationStatus == "draft"');
+    for (const type of PUBLISHING_QUEUE_TYPES) {
+      expect(PUBLISHING_QUEUE_FILTER).toContain(type);
+    }
   });
 
   it("rejects invalid chapter numbers", () => {

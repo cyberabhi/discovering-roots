@@ -5,10 +5,11 @@ import { ShawlCanvas } from "./ShawlCanvas";
 
 interface EmbroideredJourneyProps {
   chapters: Chapter[];
+  previewNotice?: string | null;
 }
 
 /** Main interactive journey: sticky shawl map (desktop) + chronological chapters. */
-export function EmbroideredJourney({ chapters }: EmbroideredJourneyProps) {
+export function EmbroideredJourney({ chapters, previewNotice }: EmbroideredJourneyProps) {
   const [active, setActive] = useState(0);
   const refs = useRef<(HTMLElement | null)[]>([]);
 
@@ -39,6 +40,11 @@ export function EmbroideredJourney({ chapters }: EmbroideredJourneyProps) {
         <h2 id="craft-title" className="mt-4 max-w-3xl text-4xl leading-tight md:text-6xl">
           Follow the embroidered thread, from pasture to loom.
         </h2>
+        {previewNotice && (
+          <p role="status" className="mt-6 max-w-3xl border-l-2 border-sky pl-4 text-sm">
+            {previewNotice}
+          </p>
+        )}
       </div>
 
       {/* Mobile compact progress */}

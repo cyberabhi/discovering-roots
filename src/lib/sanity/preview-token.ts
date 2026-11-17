@@ -31,8 +31,17 @@ export async function verifyPreviewToken(
   nowMs = Date.now(),
 ): Promise<boolean> {
   if (!secret || !token) return false;
-  const [exp, sig] = token.split(".");
-  if (!exp || !sig || !/^\d+$/.test(exp) || Number(exp) <= nowMs) return false;
+  const parts = token.split(".");
+  if (parts.length !== 2) return false;
+  const [exp, sig] = parts;
+  if (!exp || !sig || !/^\d+$/.test(exp) || !/^[0-9a-f]{64}$/.test(sig)) return false;
+  const expiresAtMs = Number(exp);
+  if (
+    !Number.isSafeInteger(expiresAtMs) ||
+    expiresAtMs <= nowMs ||
+    expiresAtMs > nowMs + PREVIEW_MAX_AGE_SECONDS * 1000
+  )
+    return false;
   const expected = await hmac(secret, `preview:${exp}`);
   if (expected.length !== sig.length) return false;
   let diff = 0;
@@ -44,7 +53,13 @@ export function readCookie(header: string | null, name: string): string | undefi
   if (!header) return undefined;
   for (const part of header.split(";")) {
     const [k, ...v] = part.trim().split("=");
-    if (k === name) return decodeURIComponent(v.join("="));
+    if (k === name) {
+      try {
+        return decodeURIComponent(v.join("="));
+      } catch {
+        return undefined;
+      }
+    }
   }
   return undefined;
 }

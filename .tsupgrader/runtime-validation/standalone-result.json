@@ -1,0 +1,253 @@
+{
+  "planHash": "47dbd88348940867b8dd82e6a814f4742206d800eb7e6198af4f9e9fe302e96c",
+  "phase": "standalone",
+  "recordedAtUtc": "2026-11-13T12:07:55.7450005Z",
+  "retryCount": 2,
+  "resetBaseline": false,
+  "complete": true,
+  "result": {
+    "setupSucceeded": true,
+    "setupDurationMs": 0,
+    "setupFailureOutput": null,
+    "assertions": [
+      {
+        "name": "tsc-no-emit",
+        "kind": "process",
+        "verificationMethod": "exit-code",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "npm notice run npx\r\nnpm notice run tsc --noEmit\r\n",
+        "durationMs": 23506
+      },
+      {
+        "name": "tests-pass",
+        "kind": "process",
+        "verificationMethod": "test-results",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "npm notice run test\r\nnpm notice run vitest run\r\n\r\n RUN  v4.1.12 F:/discovering roots\r\n\r\n\r\n Test Files  12 passed (12)\r\n      Tests  58 passed (58)\r\n   Start at  17:36:58\r\n   Duration  27.13s (transform 3.76s, setup 15.04s, import 30.65s, tests 3.21s, environment 66.28s)\r\n\r\n",
+        "durationMs": 29451,
+        "testResults": {
+          "testFramework": "vitest",
+          "runnerDetectedFrom": "package_json",
+          "testsTotal": 58,
+          "testsPassed": 58,
+          "testsFailed": 0,
+          "testsSkipped": 0,
+          "parseFailed": false
+        }
+      },
+      {
+        "name": "preview-route-eslint",
+        "kind": "process",
+        "verificationMethod": "exit-code",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "npm notice run npx\r\nnpm notice run eslint src/routes/api/preview/enable.ts src/routes/index.tsx src/test/preview-routes.test.ts src/test/homepage-integration.test.tsx --rule prettier/prettier: off\r\n",
+        "durationMs": 9553
+      },
+      {
+        "name": "preview-route-prettier",
+        "kind": "process",
+        "verificationMethod": "exit-code",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "npm notice run npx\r\nnpm notice run prettier --check --end-of-line crlf src/routes/api/preview/enable.ts src/routes/index.tsx src/test/preview-routes.test.ts src/test/homepage-integration.test.tsx\r\nChecking formatting...\r\nAll matched files use Prettier code style!\r\n",
+        "durationMs": 5829
+      },
+      {
+        "name": "production-build",
+        "kind": "process",
+        "verificationMethod": "exit-code",
+        "passed": false,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 1,
+        "outputSample": "npm notice run build\r\nnpm notice run vite build\r\n\u001B[31mfailed to load config from F:\\discovering roots\\vite.config.ts\u001B[39m\r\n\u001B[31merror during build:\r\nError: Cannot find module \u0027@babel/code-frame\u0027\r\nRequire stack:\r\n- F:\\discovering roots\\node_modules\\@babel\\traverse\\lib\\path\\replacement.js\r\n- F:\\discovering roots\\node_modules\\@babel\\traverse\\lib\\path\\index.js\r\n- F:\\discovering roots\\node_modules\\@babel\\traverse\\lib\\context.js\r\n- F:\\discovering roots\\node_modules\\@babel\\traverse\\lib\\traverse-node.js\r\n- F:\\discovering roots\\node_modules\\@babel\\traverse\\lib\\path\\context.js\r\n- F:\\discovering roots\\node_modules\\@babel\\traverse\\lib\\index.js\r\n- F:\\discovering roots\\node_modules\\babel-dead-code-elimination\\dist\\index.js\r\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1517:15)\r\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)\r\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1095:10)\r\n    at defaultResolve (node:internal/modules/cjs/loader:1152:20)\r\n    at nextStep (node:internal/modules/customization_hooks:189:26)\r\n    at Ke (file:///F:/discovering%20roots/node_modules/@tailwindcss/node/dist/index.mjs:1:539)\r\n    at nextStep (node:internal/modules/customization_hooks:189:26)\r\n    at resolveWithHooks (node:internal/modules/customization_hooks:417:10)\r\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1165:25)\r\n    at Module._load (node:internal/modules/cjs/loader:1294:5) {\r\n  code: \u0027MODULE_NOT_FOUND\u0027,\r\n  requireStack: [\r\n    \u0027F:\\\\discovering roots\\\\node_modules\\\\@babel\\\\traverse\\\\lib\\\\path\\\\replacement.js\u0027,\r\n    \u0027F:\\\\discovering roots\\\\node_modules\\\\@babel\\\\traverse\\\\lib\\\\path\\\\index.js\u0027,\r\n    \u0027F:\\\\discovering roots\\\\node_modules\\\\@babel\\\\traverse\\\\lib\\\\context.js\u0027,\r\n    \u0027F:\\\\discovering roots\\\\node_modules\\\\@babel\\\\traverse\\\\lib\\\\traverse-node.js\u0027,\r\n    \u0027F:\\\\discovering roots\\\\node_modules\\\\@babel\\\\traverse\\\\lib\\\\path\\\\context.js\u0027,\r\n    \u0027F:\\\\discovering roots\\\\node_modules\\\\@babel\\\\traverse\\\\lib\\\\index.js\u0027,\r\n    \u0027F:\\\\discovering roots\\\\node_modules\\\\babel-dead-code-elimination\\\\dist\\\\index.js\u0027\r\n  ]\r\n}\u001B[39m\r\n",
+        "durationMs": 7887
+      },
+      {
+        "name": "homepage-serves",
+        "kind": "http-probe",
+        "verificationMethod": "http-status",
+        "passed": false,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 1,
+        "outputSample": "server exited before responding (exit=1)\n--- server output ---\nnpm notice run dev\r\nnpm notice run vite dev --host 127.0.0.1 --port 8080\r\n\u0027vite\u0027 is not recognized as an internal or external command,\r\noperable program or batch file.\r\n",
+        "durationMs": 2306
+      },
+      {
+        "name": "preview-fails-closed-without-configuration",
+        "kind": "http-probe",
+        "verificationMethod": "http-status",
+        "passed": false,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 1,
+        "outputSample": "server exited before responding (exit=1)\n--- server output ---\nnpm notice run dev\r\nnpm notice run vite dev --host 127.0.0.1 --port 8080\r\n\u0027vite\u0027 is not recognized as an internal or external command,\r\noperable program or batch file.\r\n",
+        "durationMs": 2329
+      },
+      {
+        "name": "failed-preview-shows-published-site-notice",
+        "kind": "http-probe",
+        "verificationMethod": "output-contains",
+        "passed": false,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 1,
+        "outputSample": "server exited before responding (exit=1)\n--- server output ---\nnpm notice run dev\r\nnpm notice run vite dev --host 127.0.0.1 --port 8080\r\n\u0027vite\u0027 is not recognized as an internal or external command,\r\noperable program or batch file.\r\n",
+        "durationMs": 2316
+      }
+    ],
+    "executions": [
+      {
+        "source": "tsc-no-emit",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npx.CMD",
+        "args": [
+          "tsc",
+          "--noEmit"
+        ],
+        "cwd": "F:\\discovering roots",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "tests-pass",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "test"
+        ],
+        "cwd": "F:\\discovering roots",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "preview-route-eslint",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npx.CMD",
+        "args": [
+          "eslint",
+          "src/routes/api/preview/enable.ts",
+          "src/routes/index.tsx",
+          "src/test/preview-routes.test.ts",
+          "src/test/homepage-integration.test.tsx",
+          "--rule",
+          "prettier/prettier: off"
+        ],
+        "cwd": "F:\\discovering roots",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "preview-route-prettier",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npx.CMD",
+        "args": [
+          "prettier",
+          "--check",
+          "--end-of-line",
+          "crlf",
+          "src/routes/api/preview/enable.ts",
+          "src/routes/index.tsx",
+          "src/test/preview-routes.test.ts",
+          "src/test/homepage-integration.test.tsx"
+        ],
+        "cwd": "F:\\discovering roots",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "production-build",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "run",
+          "build"
+        ],
+        "cwd": "F:\\discovering roots",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "homepage-serves",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "run",
+          "dev",
+          "--",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "8080"
+        ],
+        "cwd": "F:\\discovering roots",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "preview-fails-closed-without-configuration",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "run",
+          "dev",
+          "--",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "8080"
+        ],
+        "cwd": "F:\\discovering roots",
+        "env": {
+          "SANITY_PROJECT_ID": "",
+          "SANITY_DATASET": "",
+          "SANITY_API_READ_TOKEN": "\u003Credacted\u003E",
+          "SANITY_PREVIEW_SECRET": "\u003Credacted\u003E"
+        },
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "failed-preview-shows-published-site-notice",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "run",
+          "dev",
+          "--",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "8080"
+        ],
+        "cwd": "F:\\discovering roots",
+        "env": {
+          "SANITY_PROJECT_ID": "",
+          "SANITY_DATASET": "",
+          "SANITY_API_READ_TOKEN": "\u003Credacted\u003E",
+          "SANITY_PREVIEW_SECRET": "\u003Credacted\u003E"
+        },
+        "prependPath": [],
+        "platform": "win32"
+      }
+    ]
+  }
+}

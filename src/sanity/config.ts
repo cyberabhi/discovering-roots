@@ -55,7 +55,7 @@ export const studioConfig = defineConfig({
     }),
     structureTool({ structure: studioStructure }),
     presentationTool({
-      title: "Website Preview",
+      title: "Preview and Draft Review",
       previewUrl: {
         initial: ({ origin }) => origin,
         previewMode: {

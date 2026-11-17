@@ -8,7 +8,7 @@ export const CHAPTERS_QUERY = `*[_type == "journeyChapter" && defined(stepNumber
   heroImage${IMAGE},
   documentaryVideo${MEDIA},
   audio${MEDIA},
-  toolsAndMaterials, locationLabel, artisanReviewStatus,
+  toolsAndMaterials, locationLabel, artisanReviewStatus, publicationStatus,
   "artisans": artisans[]->[_type == "artisanProfile" && consentStatus == "granted" && ($preview == true || publicationStatus == "published")]{
     _id, displayName, role, portrait${IMAGE},
     "quote": select(quoteConsent == true => quote),

@@ -1,13 +1,23 @@
 import type { StructureResolver } from "sanity/structure";
 import { JOURNEY_STEPS, journeyChapterId } from "./journey";
 
+export const PUBLISHING_QUEUE_TYPES = [
+  "journeyChapter",
+  "artisanProfile",
+  "shawl",
+  "documentaryMedia",
+  "visualPage",
+] as const;
+
+export const PUBLISHING_QUEUE_FILTER = `_type in ${JSON.stringify(PUBLISHING_QUEUE_TYPES)} && publicationStatus == "draft"`;
+
 export const studioStructure: StructureResolver = (S) =>
   S.list()
-    .title("Discovering Roots")
+    .title("Editorial Dashboard")
     .items([
       S.listItem()
         .id("websiteSettings")
-        .title("Website Settings and Homepage")
+        .title("Homepage and Website Settings")
         .child(
           S.document()
             .schemaType("siteSettings")
@@ -40,5 +50,15 @@ export const studioStructure: StructureResolver = (S) =>
       S.documentTypeListItem("artisanProfile").title("Artisan Stories"),
       S.documentTypeListItem("shawl").title("Shawl Collection"),
       S.documentTypeListItem("documentaryMedia").title("Documentary Media"),
+      S.listItem()
+        .id("publishingQueue")
+        .title("Publishing and Review")
+        .child(
+          S.documentList()
+            .id("publishingQueueList")
+            .title("Drafts to review")
+            .filter(PUBLISHING_QUEUE_FILTER)
+            .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
+        ),
       S.documentTypeListItem("visualPage").title("Visual Pages"),
     ]);
