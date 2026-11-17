@@ -1,0 +1,1 @@
+import{t as e}from"./EmbeddedStudio-Cl5-mGvs.js";var t=e;export{t as component};
