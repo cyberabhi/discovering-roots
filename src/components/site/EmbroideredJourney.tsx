@@ -1,15 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { zones, type Chapter } from "@/data/chapters";
+import type { ViewImage } from "@/lib/sanity/types";
 import { ProcessChapter } from "./ProcessChapter";
 import { ShawlCanvas } from "./ShawlCanvas";
 
 interface EmbroideredJourneyProps {
   chapters: Chapter[];
+  journeyCanvasBackground?: ViewImage | undefined;
   previewNotice?: string | null;
 }
 
 /** Main interactive journey: sticky shawl map (desktop) + chronological chapters. */
-export function EmbroideredJourney({ chapters, previewNotice }: EmbroideredJourneyProps) {
+export function EmbroideredJourney({
+  chapters,
+  journeyCanvasBackground,
+  previewNotice,
+}: EmbroideredJourneyProps) {
   const [active, setActive] = useState(0);
   const refs = useRef<(HTMLElement | null)[]>([]);
 
@@ -71,7 +77,12 @@ export function EmbroideredJourney({ chapters, previewNotice }: EmbroideredJourn
       <div className="mx-auto grid max-w-[1440px] gap-12 px-5 pb-24 md:px-10 lg:mt-14 lg:grid-cols-12">
         <div className="hidden lg:col-span-7 lg:block">
           <div className="sticky top-20 h-[calc(100vh-6rem)]">
-            <ShawlCanvas chapters={chapters} active={active} onSelect={select} />
+            <ShawlCanvas
+              chapters={chapters}
+              active={active}
+              onSelect={select}
+              journeyCanvasBackground={journeyCanvasBackground}
+            />
           </div>
         </div>
         <ol className="lg:col-span-5">

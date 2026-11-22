@@ -140,4 +140,26 @@ describe("Sanity chapter mapping", () => {
     expect(mapped.navigation).toEqual([{ label: "Craft", href: "#craft" }]);
     expect(mapped.cta.buttonHref).toBe(demoSettings.cta.buttonHref);
   });
+
+  it("maps an optional journey canvas background and leaves it unset when absent", () => {
+    const mapped = mapSettings(
+      {
+        journeyCanvasBackground: {
+          asset: { _ref: "image-canvas-1600x1200-jpg" },
+          alt: "Woven textile on a loom",
+          caption: "Journey map background",
+          credit: "Photographer",
+        },
+      },
+      urlFor,
+    );
+
+    expect(mapped.journeyCanvasBackground).toEqual({
+      src: "https://cdn.sanity.io/images/example.jpg",
+      alt: "Woven textile on a loom",
+      caption: "Journey map background",
+      credit: "Photographer",
+    });
+    expect(mapSettings({}, urlFor).journeyCanvasBackground).toBeUndefined();
+  });
 });

@@ -362,6 +362,13 @@ export const siteSettingsSchema = defineType({
       group: "identity",
     }),
     defineField({
+      name: "journeyCanvasBackground",
+      title: "Journey Canvas Background",
+      type: "documentaryImage",
+      group: "hero",
+      description: "Photograph displayed behind the interactive boat journey map.",
+    }),
+    defineField({
       name: "hero",
       title: "Homepage introduction",
       type: "object",

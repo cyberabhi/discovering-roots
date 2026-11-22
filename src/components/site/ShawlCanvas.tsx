@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Chapter } from "@/data/chapters";
+import type { ViewImage } from "@/lib/sanity/types";
 import { BoatMarker } from "./BoatMarker";
 
 // Serpentine embroidered route across the shawl canvas (viewBox 600x800).
@@ -10,9 +11,15 @@ interface Props {
   chapters: Chapter[];
   active: number;
   onSelect: (i: number) => void;
+  journeyCanvasBackground?: ViewImage | undefined;
 }
 
-export function ShawlCanvas({ chapters, active, onSelect }: Props) {
+export function ShawlCanvas({
+  chapters,
+  active,
+  onSelect,
+  journeyCanvasBackground,
+}: Props) {
   const pathRef = useRef<SVGPathElement>(null);
   const [points, setPoints] = useState<{ x: number; y: number }[]>([]);
   const [total, setTotal] = useState(0);
@@ -55,10 +62,24 @@ export function ShawlCanvas({ chapters, active, onSelect }: Props) {
   return (
     <figure className="relative flex h-full flex-col">
       <div className="weave relative flex-1 overflow-hidden border border-border">
-        {/* Real shawl photograph replaces this weave placeholder */}
-        <span className="eyebrow absolute left-4 top-4 bg-paper/80 px-2 py-1 !text-[0.6rem]">
-          Replace · Shawl canvas photograph
-        </span>
+        {journeyCanvasBackground?.src ? (
+          <>
+            <img
+              src={journeyCanvasBackground.src}
+              alt=""
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-0 bg-paper/25"
+            />
+          </>
+        ) : (
+          <span className="eyebrow absolute left-4 top-4 bg-paper/80 px-2 py-1 !text-[0.6rem]">
+            Replace · Shawl canvas photograph
+          </span>
+        )}
         <span aria-hidden className="eyebrow absolute right-4 top-4">
           Before the Loom · 1–5
         </span>

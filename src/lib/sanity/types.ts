@@ -54,6 +54,7 @@ export interface CmsChapter {
 export interface CmsSettings {
   brandName?: string | null;
   tagline?: string | null;
+  journeyCanvasBackground?: CmsImage | null;
   hero?: {
     eyebrow?: string | null;
     title?: string | null;
@@ -110,6 +111,7 @@ export interface ViewImage {
 export interface SiteSettingsView {
   brandName: string;
   tagline: string;
+  journeyCanvasBackground?: ViewImage | undefined;
   hero: {
     eyebrow: string;
     title: string;
