@@ -186,6 +186,17 @@ export function mapSettings(raw: CmsSettings | null | undefined, urlFor: UrlFor)
       ctaLabel: s(raw.hero?.ctaLabel) ?? d.hero.ctaLabel,
       image: mapImage(raw.hero?.image, urlFor, "Landscape of the Changthang plateau", 2200),
     },
+    storySection: {
+      eyebrow: s(raw.storySection?.eyebrow) ?? d.storySection.eyebrow,
+      heading: s(raw.storySection?.heading) ?? d.storySection.heading,
+      body: s(raw.storySection?.body) ?? d.storySection.body,
+    },
+    originSection: {
+      eyebrow: s(raw.originSection?.eyebrow) ?? d.originSection.eyebrow,
+      heading: s(raw.originSection?.heading) ?? d.originSection.heading,
+      paragraphOne: s(raw.originSection?.paragraphOne) ?? d.originSection.paragraphOne,
+      paragraphTwo: s(raw.originSection?.paragraphTwo) ?? d.originSection.paragraphTwo,
+    },
     navigation: nav.length ? nav : d.navigation,
     cta: {
       eyebrow: s(cta?.eyebrow) ?? d.cta.eyebrow,

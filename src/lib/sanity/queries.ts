@@ -19,6 +19,8 @@ export const CHAPTERS_QUERY = `*[_type == "journeyChapter" && defined(stepNumber
 export const SETTINGS_QUERY = `*[_type == "siteSettings" && _id in ["siteSettings", "drafts.siteSettings"]] | order(_updatedAt desc)[0]{
   brandName, tagline,
   hero{ eyebrow, title, titleEmphasis, intro, ctaLabel, image${IMAGE} },
+  storySection{ eyebrow, heading, body },
+  originSection{ eyebrow, heading, paragraphOne, paragraphTwo },
   navigation[]{ label, href },
   preservationCta, footer, contact, socialLinks[]{ platform, url },
   seo{ title, description, defaultShareImage${IMAGE} }

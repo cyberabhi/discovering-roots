@@ -78,8 +78,12 @@ function Index() {
         previewMode={content.preview}
       />
       <main id="main">
-        <HeroSection hero={content.settings.hero} shawl={content.shawl} />
-        <OriginSection />
+        <HeroSection
+          hero={content.settings.hero}
+          shawl={content.shawl}
+          storySection={content.settings.storySection}
+        />
+        <OriginSection origin={content.settings.originSection} />
         {content.chapters.length > 0 ? (
           <EmbroideredJourney
             chapters={content.chapters}

@@ -62,6 +62,17 @@ export interface CmsSettings {
     ctaLabel?: string | null;
     image?: CmsImage | null;
   } | null;
+  storySection?: {
+    eyebrow?: string | null;
+    heading?: string | null;
+    body?: string | null;
+  } | null;
+  originSection?: {
+    eyebrow?: string | null;
+    heading?: string | null;
+    paragraphOne?: string | null;
+    paragraphTwo?: string | null;
+  } | null;
   navigation?: { label?: string | null; href?: string | null }[] | null;
   preservationCta?: {
     eyebrow?: string | null;
@@ -117,6 +128,17 @@ export interface SiteSettingsView {
     intro: string;
     ctaLabel: string;
     image?: ViewImage | undefined;
+  };
+  storySection: {
+    eyebrow: string;
+    heading: string;
+    body: string;
+  };
+  originSection: {
+    eyebrow: string;
+    heading: string;
+    paragraphOne: string;
+    paragraphTwo: string;
   };
   navigation: { label: string; href: string }[];
   cta: {

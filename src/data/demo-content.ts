@@ -17,6 +17,19 @@ export const demoSettings: SiteSettingsView = {
     intro: "Documenting, with consent and care, the people and hand processes behind authentic Pashmina — from high pasture to finished cloth.",
     ctaLabel: "Follow the thread",
   },
+  storySection: {
+    eyebrow: "The Story",
+    heading: "The shawl is a map of its own making.",
+    body: "Its embroidery depicts landscape, goats, people, hand processes and the loom. We follow that thread, chapter by chapter, through the hands that make it.",
+  },
+  originSection: {
+    eyebrow: "Where the story begins",
+    heading: "A rare softness, shaped by life on the high plateau.",
+    paragraphOne:
+      "Long before a Pashmina rests on your shoulders, its story begins on the Changthang plateau. In the high-altitude cold, Changthangi goats grow a fine undercoat, carefully combed by pastoral communities during the seasonal moult.",
+    paragraphTwo:
+      "That delicate fibre is the first chapter of a shawl to be treasured—and a way to feel closer to the place and people behind it.",
+  },
   navigation: [
     { label: "The Story", href: "#story" },
     { label: "The Origin", href: "#origin" },

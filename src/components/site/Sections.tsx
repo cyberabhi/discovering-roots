@@ -2,25 +2,28 @@ import { chapters, type Chapter } from "@/data/chapters";
 import type { ShawlView, SiteSettingsView } from "@/lib/sanity/types";
 import { MediaSlot } from "./MediaSlot";
 
-export function OriginSection() {
+export function OriginSection({
+  origin,
+}: {
+  origin?: SiteSettingsView["originSection"];
+} = {}) {
   return (
     <section id="origin" aria-labelledby="origin-title" className="weave border-t border-border">
       <div className="mx-auto grid max-w-[1440px] gap-10 px-5 py-20 md:grid-cols-12 md:px-10 md:py-28">
         <div className="md:col-span-5">
-          <p className="eyebrow">Where the story begins</p>
+          <p className="eyebrow">{origin?.eyebrow ?? "Where the story begins"}</p>
           <h2 id="origin-title" className="mt-4 text-4xl leading-tight md:text-5xl">
-            A rare softness, shaped by life on the high plateau.
+            {origin?.heading ?? "A rare softness, shaped by life on the high plateau."}
           </h2>
         </div>
         <div className="space-y-5 leading-relaxed text-muted-foreground md:col-span-6 md:col-start-7">
           <p>
-            Long before a Pashmina rests on your shoulders, its story begins on the Changthang
-            plateau. In the high-altitude cold, Changthangi goats grow a fine undercoat, carefully
-            combed by pastoral communities during the seasonal moult.
+            {origin?.paragraphOne ??
+              "Long before a Pashmina rests on your shoulders, its story begins on the Changthang plateau. In the high-altitude cold, Changthangi goats grow a fine undercoat, carefully combed by pastoral communities during the seasonal moult."}
           </p>
           <p>
-            That delicate fibre is the first chapter of a shawl to be treasured—and a way to feel
-            closer to the place and people behind it.
+            {origin?.paragraphTwo ??
+              "That delicate fibre is the first chapter of a shawl to be treasured—and a way to feel closer to the place and people behind it."}
           </p>
         </div>
       </div>

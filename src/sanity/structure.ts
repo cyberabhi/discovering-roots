@@ -57,6 +57,7 @@ export const studioStructure: StructureResolver = (S) =>
           S.documentList()
             .id("publishingQueueList")
             .title("Drafts to review")
+            .apiVersion("2025-02-19")
             .filter(PUBLISHING_QUEUE_FILTER)
             .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
         ),

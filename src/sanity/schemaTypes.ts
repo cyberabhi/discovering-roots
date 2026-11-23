@@ -333,6 +333,8 @@ export const siteSettingsSchema = defineType({
   groups: [
     { name: "identity", title: "Website identity", default: true },
     { name: "hero", title: "Homepage introduction" },
+    { name: "story", title: "Shawl story section" },
+    { name: "origin", title: "Origin plateau section" },
     { name: "navigation", title: "Navigation" },
     { name: "preservation", title: "Preservation call to action" },
     { name: "footer", title: "Footer and contact" },
@@ -389,6 +391,72 @@ export const siteSettingsSchema = defineType({
           validation: (Rule) => Rule.required(),
         }),
         defineField({ name: "image", title: "Hero landscape", type: "documentaryImage" }),
+      ],
+    }),
+    defineField({
+      name: "storySection",
+      title: "Shawl story section",
+      type: "object",
+      group: "story",
+      description: "Controls the story introduction right below the main hero image.",
+      fields: [
+        defineField({
+          name: "eyebrow",
+          title: "Section label",
+          type: "string",
+          initialValue: "The Story",
+        }),
+        defineField({
+          name: "heading",
+          title: "Main heading",
+          type: "string",
+          initialValue: "The shawl is a map of its own making.",
+        }),
+        defineField({
+          name: "body",
+          title: "Story description",
+          type: "text",
+          rows: 3,
+          initialValue:
+            "Its embroidery depicts landscape, goats, people, hand processes and the loom. We follow that thread, chapter by chapter, through the hands that make it.",
+        }),
+      ],
+    }),
+    defineField({
+      name: "originSection",
+      title: "Origin plateau section",
+      type: "object",
+      group: "origin",
+      description: "Controls the Changthang plateau origin section.",
+      fields: [
+        defineField({
+          name: "eyebrow",
+          title: "Section label",
+          type: "string",
+          initialValue: "Where the story begins",
+        }),
+        defineField({
+          name: "heading",
+          title: "Main heading",
+          type: "string",
+          initialValue: "A rare softness, shaped by life on the high plateau.",
+        }),
+        defineField({
+          name: "paragraphOne",
+          title: "First paragraph",
+          type: "text",
+          rows: 3,
+          initialValue:
+            "Long before a Pashmina rests on your shoulders, its story begins on the Changthang plateau. In the high-altitude cold, Changthangi goats grow a fine undercoat, carefully combed by pastoral communities during the seasonal moult.",
+        }),
+        defineField({
+          name: "paragraphTwo",
+          title: "Second paragraph",
+          type: "text",
+          rows: 3,
+          initialValue:
+            "That delicate fibre is the first chapter of a shawl to be treasured—and a way to feel closer to the place and people behind it.",
+        }),
       ],
     }),
     defineField({
