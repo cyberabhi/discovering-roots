@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CHAPTERS_QUERY, FEATURED_SHAWL_QUERY } from "@/lib/sanity/queries";
+import { CHAPTERS_QUERY, FEATURED_SHAWL_QUERY, SETTINGS_QUERY } from "@/lib/sanity/queries";
 import {
   JOURNEY_STEPS,
   journeyChapterId,
@@ -66,12 +66,20 @@ describe("Sanity Studio schemas", () => {
       expect.arrayContaining([
         "brandName",
         "hero",
+        "journeyCanvasBackground",
         "navigation",
         "preservationCta",
         "footer",
         "seo",
       ]),
     );
+    expect(
+      siteSettingsSchema.fields.find(({ name }) => name === "journeyCanvasBackground"),
+    ).toMatchObject({
+      title: "Journey Canvas Background",
+      type: "documentaryImage",
+      group: "hero",
+    });
     expect(shawlFields).toEqual(
       expect.arrayContaining(["materials", "provenance", "artisans", "publicationStatus"]),
     );
@@ -212,5 +220,6 @@ describe("Sanity Studio schemas", () => {
     expect(CHAPTERS_QUERY).toContain('"quote": select(quoteConsent == true => quote)');
     expect(FEATURED_SHAWL_QUERY).toContain('publicationStatus == "published"');
     expect(FEATURED_SHAWL_QUERY).toContain("$preview == true");
+    expect(SETTINGS_QUERY).toContain("journeyCanvasBackground{ asset, alt, caption, credit }");
   });
 });

@@ -87,6 +87,7 @@ function Index() {
         {content.chapters.length > 0 ? (
           <EmbroideredJourney
             chapters={content.chapters}
+            journeyCanvasBackground={content.settings.journeyCanvasBackground}
             previewNotice={content.preview ? content.notice : null}
           />
         ) : (

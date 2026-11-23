@@ -178,6 +178,12 @@ export function mapSettings(raw: CmsSettings | null | undefined, urlFor: UrlFor)
   return {
     brandName: s(raw.brandName) ?? d.brandName,
     tagline: s(raw.tagline) ?? d.tagline,
+    journeyCanvasBackground: mapImage(
+      raw.journeyCanvasBackground,
+      urlFor,
+      "Photograph behind the embroidered journey map",
+      1600,
+    ),
     hero: {
       eyebrow: s(raw.hero?.eyebrow) ?? d.hero.eyebrow,
       title: s(raw.hero?.title) ?? d.hero.title,
