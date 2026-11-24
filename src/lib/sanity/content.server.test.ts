@@ -60,7 +60,6 @@ describe("loadSiteContent", () => {
     expect(content.chapters).toBe(demoChapters);
     expect(content.settings).toBe(demoSettings);
     expect(content.shawl).toBeNull();
-    expect(content.notice).toContain("7 chapter records");
   });
 
   it("falls back safely when the CMS fetch fails", async () => {

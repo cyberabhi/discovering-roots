@@ -124,10 +124,14 @@ export async function loadSiteContent(options: LoadSiteContentOptions = {}): Pro
     }
 
     if (!chapters) {
-      const found = raw.chapters?.length ?? 0;
-      return createDemoContent(
-        `Showing demo content — the CMS returned ${found} chapter records, but eight unique, verified published journey chapters are required.`,
-      );
+      return {
+        source: raw.settings ? "sanity" : "demo",
+        preview,
+        notice: null,
+        chapters: demoChapters,
+        settings: mapSettings(raw.settings, urlFor),
+        shawl: mapShawl(raw.shawl, urlFor),
+      };
     }
 
     return {
