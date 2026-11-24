@@ -45,3 +45,5 @@ config/local.*
 *.njsproj
 *.sln
 *.sw?
+.vercel
+.env*
