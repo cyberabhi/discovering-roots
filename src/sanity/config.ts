@@ -2,24 +2,29 @@ import { defineConfig, definePlugin } from "sanity";
 import type { NewDocumentOptionsContext, TemplateItem } from "sanity";
 import { presentationTool } from "sanity/presentation";
 import { structureTool } from "sanity/structure";
+import { chapters as demoChapters } from "@/data/chapters";
 import { JOURNEY_STEPS } from "./journey";
 import { visualPageTool } from "./puck/tool";
 import { schemaTypes } from "./schemaTypes";
 import { studioStructure } from "./structure";
 
-export const chapterInitialValueTemplates = JOURNEY_STEPS.map((step) => ({
-  id: `journeyChapter-${step.number}`,
-  title: `Chapter ${step.number}: ${step.title}`,
-  schemaType: "journeyChapter",
-  value: {
-    stepNumber: step.number,
-    title: step.title,
-    slug: { _type: "slug", current: step.slug },
-    phase: step.phase,
-    shortLabel: step.kicker,
-    artisanReviewStatus: "needsReview",
-  },
-}));
+export const chapterInitialValueTemplates = JOURNEY_STEPS.map((step) => {
+  const demo = demoChapters.find((chapter) => chapter.number === step.number);
+  return {
+    id: `journeyChapter-${step.number}`,
+    title: `Chapter ${step.number}: ${step.title}`,
+    schemaType: "journeyChapter",
+    value: {
+      stepNumber: step.number,
+      title: step.title,
+      slug: { _type: "slug", current: step.slug },
+      phase: step.phase,
+      shortLabel: step.kicker,
+      intro: demo?.story ?? "",
+      artisanReviewStatus: "needsReview",
+    },
+  };
+});
 
 const fixedDocumentTypes = new Set(["siteSettings", "journeyChapter", "visualPage"]);
 
