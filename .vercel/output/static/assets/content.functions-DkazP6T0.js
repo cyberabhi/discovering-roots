@@ -1,1 +1,0 @@
-import{n as e,t}from"./createServerFn-3Q8pwDmE.js";function n(e){return e}var r=t({method:`GET`}).handler(e(`5628aaee3be8917371cf667f0fa9e02784073998033f9f5baa65a4e0d019656a`));function i(e=`published`){return n({queryKey:[`site-content`,e],queryFn:async()=>JSON.parse(await r({data:{scope:e}})),staleTime:0})}export{i as n,r as t};
